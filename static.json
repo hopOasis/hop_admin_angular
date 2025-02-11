@@ -1,0 +1,14 @@
+{
+    "headers": {
+      "/**": {
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      }
+    },
+    "routes": [
+      {
+        "src": "/.*",
+        "dest": "/index.html",
+        "status": 200
+      }
+    ]
+  }
