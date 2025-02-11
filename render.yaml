@@ -3,7 +3,7 @@ services:
     name: hop-admin-angular
     env: node
     buildCommand: npm run build
-    startCommand: node dist/admin-panel/server/main.js
+    startCommand: npn run start
     envVars:
       - key: NODE_ENV
         value: production
