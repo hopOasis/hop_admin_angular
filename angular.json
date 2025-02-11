@@ -64,7 +64,7 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "host": "0.0.0.0",
-            "allowedHosts": ["hop-admin-angular.onrender.com"]
+            "allowedHosts": ["hop-admin-angular1.onrender.com"]
           },
           "configurations": {
             "production": {
