@@ -62,6 +62,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "allowedHosts": ["hop-admin-angular.onrender.com"]
+          },
           "configurations": {
             "production": {
               "buildTarget": "admin-panel:build:production"
@@ -100,6 +104,6 @@
     }
   },
   "cli": {
-    "analytics": "bcd5119d-e8d7-4d2c-ae8d-b7f5f7db0595"
+    "analytics": false
   }
 }
