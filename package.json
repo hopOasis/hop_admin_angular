@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "serve": "ng serve",
-    "start": "ng serve",
-    "build": "ng build" ,
+    "serve": "ng serve --host 0.0.0.0 --port 8080",
+    "start": "ng serve --host 0.0.0.0 --port 8080",
+    "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "postinstall": "npm install -g @angular/cli",
