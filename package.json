@@ -5,7 +5,7 @@
     "ng": "ng",
     "serve": "ng serve",
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build",
+    "build": "ng build --configuration=production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "postinstall": "npm install -g @angular/cli",
