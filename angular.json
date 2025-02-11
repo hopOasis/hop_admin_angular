@@ -20,7 +20,6 @@
           "buildTarget": "admin-panel:build"
             }
           },
-        "defaultProject": "admin-panel",
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
