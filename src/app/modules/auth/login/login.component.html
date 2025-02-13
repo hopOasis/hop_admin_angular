@@ -1,0 +1,23 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-title>Вхід</mat-card-title>
+
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput formControlName="email" type="email" required placeholder="Введіть email" autocomplete="off">
+        <mat-error *ngIf="loginForm.get('email')?.invalid">Некоректний email</mat-error>
+      </mat-form-field>
+      
+      <mat-form-field appearance="outline" class="full-width">
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password" required placeholder="Введіть пароль" autocomplete="new-password">
+        <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="loginForm.get('password')?.invalid">
+          Пароль має містити хоча б одну велику літеру, цифру та спецсимвол
+        </mat-error>
+      </mat-form-field>
+      <button mat-flat-button type="submit" class="full-width">Увійти</button>
+    </form>
+  </mat-card>
+</div>
