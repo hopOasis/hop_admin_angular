@@ -37,7 +37,9 @@ export class LoginComponent {
 
   login() {
     if (this.loginForm.valid) {
+      localStorage.setItem('token', 'your-auth-token');
       console.log('Форма валидна', this.loginForm.value);
+      console.log(localStorage.setItem)
       this.loginForm.reset();
     } else {
       alert('Ошибка: Проверьте корректность email и пароля.');
