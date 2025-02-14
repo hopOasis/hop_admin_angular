@@ -1,11 +1,20 @@
 <div class="login-container">
+
+  <div *ngIf="showError" class="error-message allert" (click)="hideError()">
+    Забагато невдалих спроб входу. Зверніться до системного адміністратора.
+  </div>
+
   <mat-card class="login-card">
     <mat-card-title>Вхід</mat-card-title>
-
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <form class="form" [formGroup]="loginForm" (ngSubmit)="login()">
       <mat-form-field appearance="outline" class="full-width">
         <input matInput formControlName="email" type="email" required placeholder="Введіть email" autocomplete="off">
-        <mat-error *ngIf="loginForm.get('email')?.invalid">Некоректний email</mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
+          Поле обов'язкове для заповнення
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
+          Неверный формат email
+        </mat-error>
       </mat-form-field>
       
       <mat-form-field appearance="outline" class="full-width">
@@ -13,8 +22,11 @@
         <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" type="button">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
-        <mat-error *ngIf="loginForm.get('password')?.invalid">
-          Пароль має містити хоча б одну велику літеру, цифру та спецсимвол
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+          Поле обов'язкове для заповнення
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched">
+          Пароль: щонайменше 8 символів, заголовна літера, цифра і спецсимвол
         </mat-error>
       </mat-form-field>
       <button mat-flat-button type="submit" class="full-width">Увійти</button>

@@ -34,15 +34,29 @@ export class LoginComponent {
   });
 
   hidePassword = true;
-
+  failedAttempts = 0
+  maxfailedAttempts = 5
+  showError = false;
   login() {
-    if (this.loginForm.valid) {
-      localStorage.setItem('token', 'your-auth-token');
-      console.log('Форма валидна', this.loginForm.value);
-      console.log(localStorage.setItem)
-      this.loginForm.reset();
-    } else {
-      alert('Ошибка: Проверьте корректность email и пароля.');
+    if (this.loginForm.invalid) {
+      this.failedAttempts++;
+      console.log(this.failedAttempts);
+
+      if (this.failedAttempts >= this.maxfailedAttempts) {
+        this.showError = true;
+        setTimeout(() => {
+          this.showError = false;
+        }, 4500);
+        return;
+      }
     }
+    else {
+      console.log('Форма валидна', this.loginForm.value);
+      this.failedAttempts = 0;
+      this.loginForm.reset();
+    }
+  }
+  hideError() {
+    this.showError = false;
   }
 }
