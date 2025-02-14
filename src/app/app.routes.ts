@@ -7,10 +7,11 @@ export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
   { path: 'auth', loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule) },
   {
-    path: '',
-    component: LayoutComponent, 
+    path: 'layout',
+    component: LayoutComponent,
     canActivate: [AuthGuard], 
     children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', loadChildren: () => import('./modules/dashboard/dashboard.module').then(m => m.DashboardModule) },
       { path: 'products', loadChildren: () => import('./modules/products/products.module').then(m => m.ProductsModule) },
       { path: 'orders', loadChildren: () => import('./modules/orders/orders.module').then(m => m.OrdersModule) },
