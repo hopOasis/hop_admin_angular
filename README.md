@@ -1,59 +1,124 @@
-# AdminPanel
+HopOasis admin panel
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.6.
+HopOasis - Project for administrators includes a wide range of features such as searching and sorting products, viewing orders, editing reviews, authentication system.
 
-## Development server
+🚀 Core Features
 
-To start a local development server, run:
+Product Management: Add, edit, and delete products
 
-```bash
-ng serve
-```
+User Authentication: Secure login with JWT tokens
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Order Management: View and manage customer orders
 
-## Code scaffolding
+Review Moderation: Approve or reject customer reviews
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Dashboard Analytics: Key business metrics overview
 
-```bash
-ng generate component component-name
-```
+🛠️ Tech Stack
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Angular 18
 
-```bash
-ng generate --help
-```
+TypeScript
 
-## Building
+Angular Material
 
-To build the project run:
+REST API Integration
 
-```bash
-ng build
-```
+👷‍♀️ Local Setup Instructions
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+1️⃣ Install Node.js and npm
 
-## Running unit tests
+Recommended version: Node.js 22+
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Linux:
 
-```bash
-ng test
-```
+sudo apt update && sudo apt install nodejs npm
+node -v   # Verify installation
 
-## Running end-to-end tests
+Windows:
 
-For end-to-end (e2e) testing, run:
+winget install OpenJS.NodeJS
+node -v
 
-```bash
-ng e2e
-```
+macOS:
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+brew install node
+node -v
 
-## Additional Resources
+2️⃣ Install Angular CLI
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+npm install -g @angular/cli@18
+ng version # Verify installation
+
+3️⃣ Download and install VSCode
+
+Download VSCode
+
+4️⃣ Clone the Repository
+
+cd /your/desired/directory
+
+git clone https://github.com/hopOasis/hop_admin_angular.git
+cd hop_admin_angular
+
+5️⃣ Install Dependencies
+
+npm install
+
+6️⃣ Open VSCode & Add Project to Workspace
+
+7️⃣ Request Environment Configuration from PM
+
+Ask the PM for the .env file containing environment variables. Once received:
+
+Create a .env file in the root directory of the project.
+
+Copy and paste the received variables into .env.
+
+Current example:
+
+VITE_API_BASE_URL="https://hopoasis.onrender.com"
+
+8️⃣ Run the Local Server
+
+npm run dev
+
+The frontend will be available at: http://localhost:4200
+
+🔄 Git Workflow Guidelines
+
+📌 Creating a New Branch
+
+A new branch should be created from staging .
+
+The branch name should be descriptive (e.g., auth-p for authentication-related changes).
+
+📝 Commits
+
+Write clear and concise commit messages.
+
+It is recommended to limit commits to 5 per task.
+
+Example:
+
+feat: added product filtering form
+
+🔀 Pull Request (PR)
+
+After completing a task, create a Pull Request.
+
+A PR is considered approved after receiving at least one approval from a colleague.
+
+Approved branches are merged into staging.
+
+✅ Deployment Process
+
+The staging branch is deployed to Render.
+
+Deployment method: TBD (CI/CD or manual process)
+
+To create an optimized production build, run:
+
+npm run build
+
+The build will be saved in the dist/ folder and will be ready for deployment.
