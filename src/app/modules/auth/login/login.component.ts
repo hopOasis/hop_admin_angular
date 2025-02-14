@@ -46,16 +46,7 @@ export class LoginComponent {
   login() {
     const { email, password } = this.loginForm.value; 
     if (this.loginForm.invalid) {
-      this.failedAttempts++;
-      console.log(this.failedAttempts);
-
-      if (this.failedAttempts >= this.maxFailedAttempts) {
-        this.showError = true;
-        setTimeout(() => {
-          this.showError = false;
-        }, 4500);
-      }
-      return;
+      this.invalid()
     }
 
     if (email && password) {
@@ -63,12 +54,25 @@ export class LoginComponent {
         next: (response) => {
           console.log('ВІдповідь сервера', response); 
           console.log('Токен:', response?.access_token); 
-    
           this.tokenService.saveToken(response.access_token); 
           this.router.navigate(['/layout']);
         },
+        error: (err) => {
+          this.invalid()
+          console.error('Невірні дані для входу:', err);
+        }
       });
-    }
+    } 
+  }
+  invalid() {
+    this.failedAttempts++;
+      console.log(this.failedAttempts);
+      if (this.failedAttempts >= this.maxFailedAttempts) {
+        this.showError = true;
+        setTimeout(() => {
+          this.showError = false;
+        }, 4500);
+      }
   }
 
   hideError() {

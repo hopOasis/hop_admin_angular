@@ -26,7 +26,7 @@
           Поле обов'язкове для заповнення
         </mat-error>
         <mat-error *ngIf="loginForm.get('password')?.hasError('minlength') && loginForm.get('password')?.touched">
-          Пароль: щонайменше 8 символів, заголовна літера, цифра і спецсимвол
+          Пароль: щонайменше 8 символів
         </mat-error>
       </mat-form-field>
       <button mat-flat-button type="submit" class="full-width">Увійти</button>
