@@ -66,7 +66,7 @@ npm install -g @angular/cli@18 ng version # Verify installation
 cd /your/desired/directory
 ```
 ```bash
-git clone https://github.com/hopOasis/hop_admin_angular.git cd hop_admin_angular
+git clone https://github.com/hopOasis/hop_admin_angular.git 
 ```
 
 5️⃣ Install Dependencies
