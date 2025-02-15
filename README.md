@@ -87,7 +87,7 @@ Copy and paste the received variables into .env.
 
 Current example:
 
-VITE_API_BASE_URL="https://hopoasis.onrender.com"
+VITE_API_BASE_URL
 
 # 8️⃣ Run the Local Server
 
