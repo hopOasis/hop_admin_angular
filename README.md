@@ -1,8 +1,8 @@
-HopOasis admin panel
+# HopOasis admin panel
 
 HopOasis - Project for administrators includes a wide range of features such as searching and sorting products, viewing orders, editing reviews, authentication system.
 
-🚀 Core Features
+# 🚀 Core Features
 
 Product Management: Add, edit, and delete products
 
@@ -14,7 +14,7 @@ Review Moderation: Approve or reject customer reviews
 
 Dashboard Analytics: Key business metrics overview
 
-🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 Angular 18
 
@@ -24,7 +24,7 @@ Angular Material
 
 REST API Integration
 
-👷‍♀️ Local Setup Instructions
+# 👷‍♀️ Local Setup Instructions
 
 1️⃣ Install Node.js and npm
 
@@ -32,23 +32,27 @@ Recommended version: Node.js 22+
 
 Linux:
 
-sudo apt update && sudo apt install nodejs npm
-node -v   # Verify installation
+```bash
+sudo apt update && sudo apt install nodejs npm node -v 
+```
+
 
 Windows:
 
-winget install OpenJS.NodeJS
-node -v
+```bash
+winget install OpenJS.NodeJS node -v
+```
 
 macOS:
 
-brew install node
-node -v
+
+```bash
+brew install node node -v
+```
 
 2️⃣ Install Angular CLI
 
-npm install -g @angular/cli@18
-ng version # Verify installation
+npm install -g @angular/cli@18 ng version # Verify installation
 
 3️⃣ Download and install VSCode
 
@@ -56,10 +60,12 @@ Download VSCode
 
 4️⃣ Clone the Repository
 
+```bash
 cd /your/desired/directory
-
-git clone https://github.com/hopOasis/hop_admin_angular.git
-cd hop_admin_angular
+```
+```bash
+git clone https://github.com/hopOasis/hop_admin_angular.git cd hop_admin_angular
+```
 
 5️⃣ Install Dependencies
 
@@ -79,13 +85,15 @@ Current example:
 
 VITE_API_BASE_URL="https://hopoasis.onrender.com"
 
-8️⃣ Run the Local Server
+# 8️⃣ Run the Local Server
 
+```bash
 npm run dev
+```
 
 The frontend will be available at: http://localhost:4200
 
-🔄 Git Workflow Guidelines
+# 🔄 Git Workflow Guidelines
 
 📌 Creating a New Branch
 
@@ -93,7 +101,7 @@ A new branch should be created from staging .
 
 The branch name should be descriptive (e.g., auth-p for authentication-related changes).
 
-📝 Commits
+# 📝 Commits
 
 Write clear and concise commit messages.
 
@@ -103,7 +111,7 @@ Example:
 
 feat: added product filtering form
 
-🔀 Pull Request (PR)
+# 🔀 Pull Request (PR)
 
 After completing a task, create a Pull Request.
 
@@ -111,7 +119,7 @@ A PR is considered approved after receiving at least one approval from a colleag
 
 Approved branches are merged into staging.
 
-✅ Deployment Process
+# ✅ Deployment Process
 
 The staging branch is deployed to Render.
 
@@ -119,6 +127,7 @@ Deployment method: TBD (CI/CD or manual process)
 
 To create an optimized production build, run:
 
+```bash
 npm run build
-
+```
 The build will be saved in the dist/ folder and will be ready for deployment.
