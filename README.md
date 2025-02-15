@@ -52,7 +52,9 @@ brew install node node -v
 
 2️⃣ Install Angular CLI
 
+```bash
 npm install -g @angular/cli@18 ng version # Verify installation
+```
 
 3️⃣ Download and install VSCode
 
@@ -69,7 +71,9 @@ git clone https://github.com/hopOasis/hop_admin_angular.git cd hop_admin_angular
 
 5️⃣ Install Dependencies
 
+```bash
 npm install
+```
 
 6️⃣ Open VSCode & Add Project to Workspace
 
