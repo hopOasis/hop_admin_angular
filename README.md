@@ -79,15 +79,8 @@ npm install
 
 7️⃣ Request Environment Configuration from PM
 
-Ask the PM for the .env file containing environment variables. Once received:
-
 Create a .env file in the root directory of the project.
-
 Copy and paste the received variables into .env.
-
-Current example:
-
-VITE_API_BASE_URL
 
 # 8️⃣ Run the Local Server
 
