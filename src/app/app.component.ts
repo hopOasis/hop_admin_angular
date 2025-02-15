@@ -20,11 +20,8 @@ export class AppComponent {
   ) {}
   
   ngOnInit() {
-    this.authService.validateToken().subscribe(isValid => {
-      if (!isValid) {
-        this.tokenService.removeToken(); 
-        this.router.navigate(['/login']);
-      }
-    });
+    if (!this.tokenService.isTokenValid()) {
+      this.router.navigate(['/login']); 
+    }
   }
 }
