@@ -46,6 +46,7 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value; 
     if (this.loginForm.invalid) {
       this.invalid()
+      return
     }
 
     if (email && password) {
@@ -68,6 +69,7 @@ export class LoginComponent {
       console.log(this.failedAttempts);
       if (this.failedAttempts >= this.maxFailedAttempts) {
         this.showError = true;
+        this.failedAttempts = 0
         setTimeout(() => {
           this.showError = false;
         }, 4500);
