@@ -58,7 +58,7 @@ npm install -g @angular/cli@18 ng version # Verify installation
 
 3️⃣ Download and install VSCode
 
-Download VSCode
+[Download VSCode](https://code.visualstudio.com/)
 
 4️⃣ Clone the Repository
 
