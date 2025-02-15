@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+
 import { AuthService } from '../../../core/services/auth/auth.service';
 import { TokenService } from '../../../core/services/token/token.service';
 import { Router } from '@angular/router';
@@ -23,60 +24,66 @@ import { Router } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatIconModule
-  ]
+    MatIconModule,
+  ],
 })
 export class LoginComponent {
-  loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(8),
-    ])
-  });
-
+  loginForm: FormGroup;
   hidePassword = true;
   failedAttempts = 0;
-  maxFailedAttempts = 5;
+  readonly maxFailedAttempts = 5;
+
   showError = false;
+  failData = false;
 
-  constructor(private authService: AuthService, private tokenService: TokenService, private router: Router) {}
-
-  login() {
-    const { email, password } = this.loginForm.value; 
-    if (this.loginForm.invalid) {
-      this.invalid()
-      return
-    }
-
-    if (email && password) {
-      this.authService.login(email, password).subscribe({
-        next: (response) => {
-          console.log('ВІдповідь сервера', response); 
-          console.log('Токен:', response?.access_token); 
-          this.tokenService.saveToken(response.access_token); 
-          this.router.navigate(['/layout']);
-        },
-        error: (err) => {
-          this.invalid()
-          console.error('Невірні дані для входу:', err);
-        }
-      });
-    } 
+  constructor(
+    private authService: AuthService,
+    private tokenService: TokenService,
+    private router: Router
+  ) {
+    this.loginForm = new FormGroup({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8),
+      ]),
+    });
   }
-  invalid() {
+
+  login(): void {
+    if (this.loginForm.invalid) return;
+
+    const { email, password } = this.loginForm.value;
+    
+    this.authService.login(email, password).subscribe({
+      next: (response) => this.handleSuccess(response),
+      error: () => this.handleError(),
+    });
+  }
+
+  private handleSuccess(response: any): void {
+    this.tokenService.saveToken(response.access_token);
+    this.router.navigate(['/layout']);
+    this.failData = false;
+    this.failedAttempts = 0; 
+  }
+
+  private handleError(): void {
+    this.failData = true;
     this.failedAttempts++;
-      console.log(this.failedAttempts);
-      if (this.failedAttempts >= this.maxFailedAttempts) {
-        this.showError = true;
-        this.failedAttempts = 0
-        setTimeout(() => {
-          this.showError = false;
-        }, 4500);
-      }
+
+    if (this.failedAttempts >= this.maxFailedAttempts) {
+      this.showError = true;
+      this.failData = false;
+      this.loginForm.reset();
+
+      setTimeout(() => {
+        this.showError = false;
+      }, 4500);
+    }
   }
 
-  hideError() {
+  hideError(): void {
     this.showError = false;
   }
 }

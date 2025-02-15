@@ -1,11 +1,11 @@
 <div class="login-container">
-
   <div *ngIf="showError" class="error-message allert" (click)="hideError()">
     Забагато невдалих спроб входу. Зверніться до системного адміністратора.
   </div>
 
   <mat-card class="login-card">
     <mat-card-title>Вхід</mat-card-title>
+    
     <form class="form" [formGroup]="loginForm" (ngSubmit)="login()">
       <mat-form-field appearance="outline" class="full-width">
         <input matInput formControlName="email" type="email" required placeholder="Введіть email" autocomplete="off">
@@ -29,7 +29,12 @@
           Пароль: щонайменше 8 символів
         </mat-error>
       </mat-form-field>
-      <button mat-flat-button type="submit" class="full-width">Увійти</button>
+
+      <div *ngIf="failData" class="login-error">
+        Логін або Пароль не вірні
+      </div>
+
+      <button mat-flat-button type="submit" class="full-width" [disabled]="loginForm.invalid">Увійти</button>
     </form>
   </mat-card>
 </div>
