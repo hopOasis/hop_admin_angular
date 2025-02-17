@@ -42,7 +42,7 @@ export class ProductsComponent implements OnInit {
         this.filteredProducts = [...this.products];
       },
       (error) => {
-        console.error('Ошибка при получении продуктов:', error);
+        console.error(error);
       }
     );
   }
