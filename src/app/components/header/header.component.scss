@@ -1,0 +1,29 @@
+.header {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  padding: 1rem;
+  background-color: #2a2d3e;
+  color: #fff;
+  button {
+    position: relative;
+    margin-right: 1rem;
+    .indicate {
+      color: #00f33d;
+      position: absolute;
+      font-size: 1rem;
+      top: -5px;
+      left: 31px;
+      z-index: 44;
+    }
+  }
+
+  mat-icon {
+    color: #fff;
+  }
+
+  .account-name {
+    font-size: 1.4rem;
+    margin-left: 2rem;
+  }
+}

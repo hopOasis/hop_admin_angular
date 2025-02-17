@@ -1,0 +1,11 @@
+.layout {
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+
+  .layout-wrapper {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+}
