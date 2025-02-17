@@ -12,5 +12,8 @@
 
   .layout-content {
     padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%; // Чтобы контейнер занимал всю доступную высоту
   }
 }
