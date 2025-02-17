@@ -15,6 +15,14 @@
       width: 18rem;
       background-color: #2a2d3e;
       border-radius: 0;
+      gap: 5rem;
+      .flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; 
+        height: 100%; 
+        overflow: hidden;
+      }
 
       .sidebar-header {
         text-align: center;

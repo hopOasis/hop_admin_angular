@@ -1,16 +1,17 @@
 <mat-sidenav-container class="sidebar">
   <mat-sidenav class="sidebar-content" mode="side" opened>
-      <div class="sidebar-header">Admin-Oasis</div>
-      
+    <div class="flex">
       <mat-nav-list class="sidebar-links">
-        <a class="link" mat-list-item *ngFor="let link of links" [routerLink]="link.path" routerLinkActive="active-link">
-          <span class="link-item">
-            <mat-icon class="icon">{{ link.icon }}</mat-icon>
-            <span class="label">{{ link.label }}</span>
-          </span>
-        </a>
-      </mat-nav-list>
-      <hr>
-    <button mat-button type="button" >Log out</button>
+          <div class="sidebar-header">Admin-Oasis</div>
+          <a class="link" mat-list-item *ngFor="let link of links" [routerLink]="link.path" routerLinkActive="active-link">
+            <span class="link-item">
+              <mat-icon class="icon">{{ link.icon }}</mat-icon>
+              <span class="label">{{ link.label }}</span>
+            </span>
+          </a>
+          <hr>
+        </mat-nav-list>
+      <button mat-button type="button" (click)="logout()">Log out</button>
+    </div>
   </mat-sidenav>
 </mat-sidenav-container>
