@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductService } from '../../../core/services/product/product.service';
 import { ApiResponse, Product } from '../../../core/models/product.model';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-product',
@@ -23,43 +24,50 @@ import { ApiResponse, Product } from '../../../core/models/product.model';
   styleUrls: ['./products.component.scss']
 })
 export class ProductsComponent implements OnInit {
-  constructor(private productService: ProductService) {}
+  resultsLength = 0;  
+  itemsPerPage = 10;  
+  currentPage = 0;   
 
   displayedColumns: string[] = ['name', 'description', 'imageName', 'itemType', 'options', 'actions'];
 
   products: Product[] = [];
   filteredProducts: Product[] = [];
 
+  constructor(private productService: ProductService) {}
+
   ngOnInit(): void {
-    this.getProducts();
+    this.getAllProducts();  
   }
 
-  getProducts() {
-    this.productService.getProducts().subscribe(
-      (data: ApiResponse) => { 
-        console.log(data)
-        this.products = data.content; 
-        this.filteredProducts = [...this.products];
-      },
-      (error) => {
-        console.error(error);
-      }
-    );
-  }
-
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase(); 
-    this.filteredProducts = this.products.filter(product =>
-      product.name.toLowerCase().includes(filterValue)
-    );
-  }
+  getAllProducts(): void {
+    this.productService.getProducts(0, 10).subscribe((data: ApiResponse) => {
+      const totalPages = data.totalPages;
+      const requests = [];
   
+      for (let i = 0; i < totalPages; i++) {
+        requests.push(this.productService.getProducts(i, 10));
+      }
+  
+      forkJoin(requests).subscribe((responses) => {
+        this.products = responses.flatMap(res => res.content);
+        this.filteredProducts = [...this.products];
+      });
+    });
+  }
 
-  editProduct(product: Product) {
+
+  Filter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();  
+    this.filteredProducts = this.products.filter(product =>
+      product.name.toLowerCase().includes(filterValue)  
+    );
+  }
+
+  editProduct(product: Product): void {
     console.log('Edit:', product);
   }
 
-  deleteProduct(product: Product) {
+  deleteProduct(product: Product): void {
     this.products = this.products.filter(p => p !== product);
     this.filteredProducts = [...this.products];
   }

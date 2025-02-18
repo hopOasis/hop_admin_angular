@@ -19,5 +19,7 @@ export interface Option {
   
 export interface ApiResponse {
     content: Product[];
-    
-}
+    totalElements: number;
+    totalPages: number; 
+  }
+  

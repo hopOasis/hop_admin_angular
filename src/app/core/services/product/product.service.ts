@@ -10,7 +10,7 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getProducts(): Observable<ApiResponse> {
-    return this.http.get<ApiResponse>(this.apiUrl);  
-  }
+  getProducts(page: number, size: number): Observable<ApiResponse> {
+    return this.http.get<ApiResponse>(`${this.apiUrl}?page=${page}&size=${size}`);
+  }  
 }
