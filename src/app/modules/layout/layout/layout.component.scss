@@ -1,0 +1,16 @@
+.layout {
+  background-color: #e4e4e4;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+
+  .layout-wrapper {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .layout-content {
+    padding: 3rem;
+  }
+}
