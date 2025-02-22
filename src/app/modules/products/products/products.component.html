@@ -3,13 +3,13 @@
     <mat-form-field>
         <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input>
     </mat-form-field>
-    <button mat-raised-button (click)="addProduct()" color="primary">Добавити новий товар</button>
+    <button mat-raised-button (click)="addProduct()" color="primary">Додати новий товар</button>
   </div>
   <table mat-table [dataSource]="filteredProducts" class="mat-elevation-z8">
       <ng-container *ngFor="let column of displayedColumns">
         <ng-container matColumnDef="{{ column }}">
           <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
-          <td mat-cell *matCellDef="let product" [ngClass]="{ 'description-column': column === 'description' }">
+          <td mat-cell *matCellDef="let product">
             <ng-container *ngIf="column === 'imageName'">
               <img *ngIf="product.imageName.length" [src]="product.imageName[0]" alt="Image" class="product-image">
             </ng-container>
@@ -23,7 +23,7 @@
                 <button (click)="editProduct(product)" mat-icon-button color="primary">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button (click)="deleteProduct(product.id)" mat-icon-button color="warn">
+                <button (click)="deleteProduct(product.id, product.itemType)" mat-icon-button color="warn">
                   <mat-icon>delete</mat-icon>
                 </button>
               </div>
