@@ -28,7 +28,7 @@ import { ProductEditorComponent } from '../../../components/product-editor/produ
     MatSelectModule,
     MatCardModule,
     ProductEditorComponent
-],
+  ],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
@@ -37,7 +37,7 @@ export class ProductsComponent implements OnInit {
   resultsLength = 0;  
   itemsPerPage = 10;  
   currentPage = 0;
-  edit = false
+  edit = false;
   selectedFile: File | null = null;
   selectedProduct: Product | null = null;
 
@@ -66,31 +66,31 @@ export class ProductsComponent implements OnInit {
         this.filteredProducts = [...this.products];
       });
     });
-}
+  }
 
-Filter(event: Event): void {
+  Filter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();  
     this.filteredProducts = this.products.filter(product =>
       product.name.toLowerCase().includes(filterValue)  
     );
-}
+  }
 
-editProduct(product: Product): void {
+  editProduct(product: Product): void {
     this.selectedProduct = { ...product };
     this.edit = true;
     console.log('Edit:', this.selectedProduct);
     this.imagePreview = product.imageName ? product.imageName[0] : null;
-}
+  }
 
 
 
-deleteProduct(productType: string, id: number): void {
-  this.productService.deleteProduct(productType, id).subscribe(() => {
-    console.log(`Продукт з ID ${id} типу ${productType} видалено`);
-  });
-}
+  deleteProduct(productType: string, id: number): void {
+    this.productService.deleteProduct(productType, id).subscribe(() => {
+      console.log(`Продукт з ID ${id} типу ${productType} видалено`);
+    });
+  }
 
-addProduct() {
-  console.log()
+  addProduct() {
+    console.log();
   }
 }

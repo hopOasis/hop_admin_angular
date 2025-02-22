@@ -16,7 +16,7 @@ export class TokenService {
   }
 
   removeToken() {
-    localStorage.removeItem(this.TOKEN_KEY)
+    localStorage.removeItem(this.TOKEN_KEY);
   }
   isTokenValid(): boolean {
     const token = this.getToken();
@@ -27,6 +27,7 @@ export class TokenService {
       const expiration = payload.exp * 1000; 
       return Date.now() < expiration;
     } catch (error) {
+      console.log(error);
       return false; 
     }
   }

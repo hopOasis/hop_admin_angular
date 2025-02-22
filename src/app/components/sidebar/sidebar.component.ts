@@ -35,7 +35,7 @@ export class SidebarComponent {
     { path: 'reviews', label: 'Reviews', icon: 'feedback' }
   ];
   logout() {
-    this.tokenService.removeToken()
+    this.tokenService.removeToken();
     this.router.navigate(['']);
   }
 

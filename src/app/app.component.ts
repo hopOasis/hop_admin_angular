@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { AuthService } from './core/services/auth/auth.service';
 import { TokenService } from './core/services/token/token.service';
 
 @Component({

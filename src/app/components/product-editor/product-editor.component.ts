@@ -54,82 +54,82 @@ export class ProductEditorComponent {
 
   saveProduct(): void {
     if (!this.selectedProduct) {
-        console.error('Нет выбранного продукта');
-        return;
+      console.error('Нет выбранного продукта');
+      return;
     }
 
     let formData: Partial<Product> = {
-        description: this.selectedProduct.description,
-        options: this.selectedProduct.options.map(option => ({
-            id: option.id,
-            quantity: option.quantity,
-            price: option.price,
-            volume: option.volume
-        }))
+      description: this.selectedProduct.description,
+      options: this.selectedProduct.options.map(option => ({
+        id: option.id,
+        quantity: option.quantity,
+        price: option.price,
+        volume: option.volume
+      }))
     };
 
     let apiPath = ''; 
 
     switch (this.selectedProduct.itemType.toLowerCase()) {
-        case 'cider':
-            (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
-            apiPath = 'ciders';
-            break;
-        case 'beer':
-            (formData as Partial<Beer>).beerName = this.selectedProduct.name;
-            apiPath = 'beers';
-            break;
-        case 'snack':
-            (formData as Partial<Snack>).snackName = this.selectedProduct.name;
-            (formData as Partial<Snack>).description = this.selectedProduct.description;
-            (formData as Partial<Snack>).imageName = this.selectedProduct.imageName; // Не забудьте обновить
-            (formData as Partial<Snack>).options = this.selectedProduct.options.map(option => ({
-                id: option.id,
-                weight: option.measureValue,
-                quantity: option.quantity,
-                price: option.price,
-            })) as SnackOptions[];
-            apiPath = 'snacks';
-            break;
-        default:
-            console.error('Unknown product type:', this.selectedProduct.itemType);
-            return;
+    case 'cider':
+      (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
+      apiPath = 'ciders';
+      break;
+    case 'beer':
+      (formData as Partial<Beer>).beerName = this.selectedProduct.name;
+      apiPath = 'beers';
+      break;
+    case 'snack':
+      (formData as Partial<Snack>).snackName = this.selectedProduct.name;
+      (formData as Partial<Snack>).description = this.selectedProduct.description;
+      (formData as Partial<Snack>).imageName = this.selectedProduct.imageName; // Не забудьте обновить
+      (formData as Partial<Snack>).options = this.selectedProduct.options.map(option => ({
+        id: option.id,
+        weight: option.measureValue,
+        quantity: option.quantity,
+        price: option.price,
+      })) as SnackOptions[];
+      apiPath = 'snacks';
+      break;
+    default:
+      console.error('Unknown product type:', this.selectedProduct.itemType);
+      return;
     }
 
     this.productService.updateProduct(apiPath, this.selectedProduct.id, formData).subscribe({
-        next: (response) => {
-            console.log('Продукт обновлен:', response);
-            this.cancelEdit();
+      next: (response) => {
+        console.log('Продукт обновлен:', response);
+        this.cancelEdit();
             
-            // Загружаем изображение только если есть файл
-            if (this.selectedProduct && this.selectedFile) {
-                this.productService.uploadImage(this.selectedProduct.id, this.selectedFile, apiPath).subscribe({
-                    next: (imgResponse) => {
-                        console.log('Изображение загружено:', imgResponse);
-                        if (imgResponse.imageUrl) {
+        // Загружаем изображение только если есть файл
+        if (this.selectedProduct && this.selectedFile) {
+          this.productService.uploadImage(this.selectedProduct.id, this.selectedFile, apiPath).subscribe({
+            next: (imgResponse) => {
+              console.log('Изображение загружено:', imgResponse);
+              if (imgResponse.imageUrl) {
                             // Замените старое изображение новым
                             this.selectedProduct!.imageName = [imgResponse.imageUrl]; // Замените массив
                             this.imagePreview = imgResponse.imageUrl; // Обновите предварительный просмотр
                             this.selectedFile = null; // Очистите выбранный файл
-                        }
-                    },
-                    error: (error) => console.error('Ошибка загрузки изображения:', error)
-                });
-            } else {
-                console.error('Продукт или файл не выбран');
-            }
-        },
-        error: (error) => console.error('Ошибка обновления продукта:', error)
+              }
+            },
+            error: (error) => console.error('Ошибка загрузки изображения:', error)
+          });
+        } else {
+          console.error('Продукт или файл не выбран');
+        }
+      },
+      error: (error) => console.error('Ошибка обновления продукта:', error)
     });
-    this.cancelEdit()
-}
+    this.cancelEdit();
+  }
 
-deleteImg(id: number): void {
-  if (this.selectedProduct && this.selectedProduct.imageName && this.selectedProduct.imageName[id]) {
-    this.productService.deleteImage(this.selectedProduct.itemType, this.selectedProduct.imageName[id]).subscribe({
-    });
-  } 
-}
+  deleteImg(id: number): void {
+    if (this.selectedProduct && this.selectedProduct.imageName && this.selectedProduct.imageName[id]) {
+      this.productService.deleteImage(this.selectedProduct.itemType, this.selectedProduct.imageName[id]).subscribe({
+      });
+    } 
+  }
 
   cancelEdit(): void {
     this.selectedProduct = null;
