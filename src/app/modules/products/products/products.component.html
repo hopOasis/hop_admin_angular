@@ -1,9 +1,10 @@
 <div class="table-wrapper">
-  <mat-form-field>
-    <mat-label>Filter</mat-label>
-    <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input>
-    <button (click)="addProduct()" mat-icon-button color="primary">111111111111</button>
-  </mat-form-field>
+  <div class="header-tablet">
+    <mat-form-field>
+        <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input>
+    </mat-form-field>
+    <button mat-raised-button (click)="addProduct()" color="primary">Добавити новий товар</button>
+  </div>
   <table mat-table [dataSource]="filteredProducts" class="mat-elevation-z8">
       <ng-container *ngFor="let column of displayedColumns">
         <ng-container matColumnDef="{{ column }}">
