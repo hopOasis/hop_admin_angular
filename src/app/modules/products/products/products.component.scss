@@ -1,61 +1,39 @@
 * {
   margin: 0;
 }
-.table-header {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-between;
-}
-
-th, td {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 0.5rem;
-  text-align: left;
-  max-width: 10rem;
-}
-
-th {
-  background-color: #f5f5f5;
-  font-weight: bold;
-  font-size: 0.8rem;
-}
-
-td:nth-child(2) {
-  max-width: 100%;
-  white-space: normal;
-  text-overflow: clip;
-}
-
-.product-image {
-  max-width: 3.6rem;
-  max-height: 3.6rem;
-  border-radius: 0.1rem;
-  object-fit: cover;
-}
-
-.actions {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-
-tr:hover {
-  background-color: #dbdada;
-  transition: all 0.4s
-}
-
-table {
-  width: 100%;
-  max-height: calc(100vh - 16rem); 
-  overflow-y: auto; 
-  display: block;
-}
-
 .header-tablet {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  flex-direction: row;
+  button {
+    border-radius: 0;
+  }
+}
+
+img {
+  height: 50px;
+  width: 50px;
+}
+.table-wrapper {
+  max-width: 100%;
+}
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  text-align: center;
+}
+.mat-column-actions {
+  text-align: center;
+}
+
+// .mat-column-options {
+//   text-align: center;
+// }
+
+td,
+th {
+  padding: 0.3rem;
+  min-width: 10rem;
 }

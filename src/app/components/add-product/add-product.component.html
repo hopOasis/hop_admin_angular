@@ -1,0 +1,53 @@
+<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="type">Тип товара</label>
+    <select id="type" formControlName="type">
+      <option value="">Выберите тип товара</option>
+      <option value="snack">Закуска</option>
+      <option value="cider">Напиток</option>
+      <option value="beer">Десерт</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="photo">Фотография</label>
+    <input type="file" (change)="onFileSelected($event)" />
+    <img
+      *ngIf="imagePreview"
+      [src]="imagePreview"
+      alt="Предпросмотр"
+      width="100"
+    />
+  </div>
+
+  <div>
+    <label for="name">Название</label>
+    <input id="name" formControlName="name" />
+  </div>
+
+  <div>
+    <label for="description">Описание</label>
+    <textarea id="description" formControlName="description"></textarea>
+  </div>
+
+  <div formArrayName="options">
+    <div
+      *ngFor="let option of options.controls; let i = index"
+      [formGroupName]="i"
+    >
+      <label for="price">Цена</label>
+      <input id="price" formControlName="price" />
+
+      <label for="quantity">Количество</label>
+      <input id="quantity" formControlName="quantity" />
+
+      <label for="weight">Вес</label>
+      <input id="weight" formControlName="weight" />
+    </div>
+  </div>
+
+  <button type="button" (click)="addOption()">Добавить опцию</button>
+
+  <button type="submit">Добавить</button>
+  <button type="button" (click)="onCancel()">Отмена</button>
+</form>

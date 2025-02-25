@@ -5,7 +5,7 @@ import { TokenService } from '../token/token.service';
 import { environment } from '../../../../environments/environments';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   private readonly apiBase = environment.apiBase;
@@ -13,20 +13,21 @@ export class AuthService {
   constructor(private http: HttpClient, private tokenService: TokenService) {}
 
   login(email: string, password: string): Observable<{ access_token: string }> {
-    return this.http.post<{ access_token: string }>(this.apiBase, { email, password });
+    return this.http.post<{ access_token: string }>(
+      `${this.apiBase}/auth/login`,
+      { email, password }
+    );
   }
 
   validateToken(): Observable<boolean> {
     const token = this.tokenService.getToken();
     if (!token) {
-      return of(false); 
+      return of(false);
     }
 
     return this.http.get(`${this.apiBase}/validate-token`).pipe(
-      map(() => true), 
-      catchError(() => of(false)) 
+      map(() => true),
+      catchError(() => of(false))
     );
   }
-  
 }
-

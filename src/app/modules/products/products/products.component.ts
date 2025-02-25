@@ -6,13 +6,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductService } from '../../../core/services/product/product.service';
-import { ApiResponse,  Product, } from '../../../core/models/product.model';
+import { ApiResponse, Product } from '../../../core/models/product.model';
 import { forkJoin } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { ProductEditorComponent } from '../../../components/product-editor/product-editor.component';
-
+import { AddProductComponent } from '../../../components/add-product/add-product.component';
 
 @Component({
   selector: 'app-product',
@@ -27,21 +27,29 @@ import { ProductEditorComponent } from '../../../components/product-editor/produ
     MatIconModule,
     MatSelectModule,
     MatCardModule,
-    ProductEditorComponent
+    AddProductComponent,
+    ProductEditorComponent,
   ],
   templateUrl: './products.component.html',
-  styleUrls: ['./products.component.scss']
+  styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
   imagePreview: string | ArrayBuffer | null = null;
-  resultsLength = 0;  
-  itemsPerPage = 10;  
+  resultsLength = 0;
+  itemsPerPage = 10;
   currentPage = 0;
   edit = false;
   selectedFile: File | null = null;
   selectedProduct: Product | null = null;
 
-  displayedColumns: string[] = ['name', 'description', 'imageName', 'itemType', 'options', 'actions'];
+  displayedColumns: string[] = [
+    'name',
+    'description',
+    'imageName',
+    'itemType',
+    'options',
+    'actions',
+  ];
 
   products: Product[] = [];
   filteredProducts: Product[] = [];
@@ -49,29 +57,31 @@ export class ProductsComponent implements OnInit {
   constructor(private productService: ProductService) {}
 
   ngOnInit(): void {
-    this.getAllProducts();  
+    this.getAllProducts();
   }
 
   getAllProducts(): void {
     this.productService.getProducts(0, 10).subscribe((data: ApiResponse) => {
       const totalPages = data.totalPages;
       const requests = [];
-  
+
       for (let i = 0; i < totalPages; i++) {
         requests.push(this.productService.getProducts(i, 10));
       }
-  
+
       forkJoin(requests).subscribe((responses) => {
-        this.products = responses.flatMap(res => res.content);
+        this.products = responses.flatMap((res) => res.content);
         this.filteredProducts = [...this.products];
       });
     });
   }
 
   Filter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();  
-    this.filteredProducts = this.products.filter(product =>
-      product.name.toLowerCase().includes(filterValue)  
+    const filterValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
+    this.filteredProducts = this.products.filter((product) =>
+      product.name.toLowerCase().includes(filterValue)
     );
   }
 
@@ -82,11 +92,10 @@ export class ProductsComponent implements OnInit {
     this.imagePreview = product.imageName ? product.imageName[0] : null;
   }
 
-
-
-  deleteProduct(productType: string, id: number): void {
-    this.productService.deleteProduct(productType, id).subscribe(() => {
-      console.log(`Продукт з ID ${id} типу ${productType} видалено`);
+  deleteProduct(itemType: string, id: number): void {
+    console.log('type', itemType);
+    this.productService.deleteProduct(itemType, id).subscribe(() => {
+      console.log(`Продукт з ID ${id} типу ${itemType} видалено`);
     });
   }
 

@@ -1,49 +1,66 @@
 <div class="overlay" *ngIf="selectedProduct">
   <div class="product-editor-modal">
+    <div class="block-img"></div>
+    <div
+      *ngFor="let img of selectedProduct.imageName; let i = index"
+      class="image-upload"
+    >
+      <img [src]="img" alt="Image" class="product-image" />
+    </div>
+    <div *ngIf="imagePreview" class="image-upload">
+      <img [src]="imagePreview" alt="Предпросмотр" class="product-image" />
+    </div>
+    <div class="button-wrapper">
+      <button (click)="fileInput.click()">Загрузити нове фото</button>
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="onFileSelected($event)"
+      />
 
-      <div *ngFor="let img of selectedProduct.imageName; let i = index" class="image-upload">
-          <img [src]="img" alt="Image" class="product-image" />
-      </div>
-      <div class="button-wrapper">
-        <button  (click)="fileInput.click()">
-          Загрузити нове фото
-        </button>
-        <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)" />
-        
-        <button  (click)="deleteImg(0)">
-          Видалити це фото
-        </button>
-      </div>
+      <button (click)="deleteImg(0)">Видалити це фото</button>
+    </div>
 
+    <mat-form-field appearance="fill">
+      <mat-label>Назва</mat-label>
+      <input matInput id="name" [(ngModel)]="selectedProduct.name" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Опис</mat-label>
+      <textarea
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        cdkAutosizeMaxRows="10"
+        matInput
+        id="description"
+        [(ngModel)]="selectedProduct.description"
+      ></textarea>
+    </mat-form-field>
+
+    <div
+      *ngFor="let option of selectedProduct.options; let i = index"
+      class="option-fields"
+    >
       <mat-form-field appearance="fill">
-          <mat-label>Назва</mat-label>
-          <input matInput id="name" [(ngModel)]="selectedProduct.name" />
+        <mat-label>Ціна</mat-label>
+        <input matInput type="number" [(ngModel)]="option.price" />
       </mat-form-field>
 
       <mat-form-field appearance="fill">
-          <mat-label>Опис</mat-label>
-          <textarea cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="10" matInput id="description" [(ngModel)]="selectedProduct.description"></textarea>
+        <mat-label>Кількість</mat-label>
+        <input matInput type="number" [(ngModel)]="option.quantity" />
       </mat-form-field>
 
-      <div *ngFor="let option of selectedProduct.options; let i = index" class="option-fields">
-          <mat-form-field appearance="fill">
-              <mat-label>Ціна</mat-label>
-              <input matInput type="number" [(ngModel)]="option.price" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-              <mat-label>Кількість</mat-label>
-              <input matInput type="number" [(ngModel)]="option.quantity" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Вага</mat-label>
-            <input matInput type="number" [(ngModel)]="option.measureValue" />
-          </mat-form-field>
-      </div>
-      <div class="button-wrapper">
-        <button (click)="saveProduct()">Зберегти</button>
-        <button (click)="cancelEdit()">Скасувати</button>
-      </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Вага</mat-label>
+        <input matInput type="number" [(ngModel)]="option.measureValue" />
+      </mat-form-field>
+    </div>
+    <div class="button-wrapper">
+      <button (click)="saveProduct()">Зберегти</button>
+      <button (click)="cancelEdit()">Скасувати</button>
+    </div>
   </div>
 </div>

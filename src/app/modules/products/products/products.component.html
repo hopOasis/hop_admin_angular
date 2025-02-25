@@ -1,41 +1,70 @@
 <div class="table-wrapper">
   <div class="header-tablet">
     <mat-form-field>
-        <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input>
+      <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input />
     </mat-form-field>
-    <button mat-raised-button (click)="addProduct()" color="primary">Додати новий товар</button>
+    <button mat-raised-button (click)="addProduct()" color="primary">
+      Добавити новий товар
+    </button>
   </div>
   <table mat-table [dataSource]="filteredProducts" class="mat-elevation-z8">
-      <ng-container *ngFor="let column of displayedColumns">
-        <ng-container matColumnDef="{{ column }}">
-          <th mat-header-cell *matHeaderCellDef> {{ column | titlecase }} </th>
-          <td mat-cell *matCellDef="let product">
-            <ng-container *ngIf="column === 'imageName'">
-              <img *ngIf="product.imageName.length" [src]="product.imageName[0]" alt="Image" class="product-image">
-            </ng-container>
-            <ng-container *ngIf="column === 'options'">
-              <div *ngFor="let option of product.options">
-                <p>{{ option.measureValue }}L, {{ option.quantity }} Price: {{ option.price }}</p>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="column === 'actions'">
-              <div class="actions">
-                <button (click)="editProduct(product)" mat-icon-button color="primary">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button (click)="deleteProduct(product.id, product.itemType)" mat-icon-button color="warn">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </ng-container>
-            <ng-container *ngIf="column !== 'imageName' && column !== 'options' && column !== 'actions'">
-              {{ product[column] }}
-            </ng-container>
-          </td>
-        </ng-container>
+    <ng-container *ngFor="let column of displayedColumns">
+      <ng-container matColumnDef="{{ column }}">
+        <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
+        <td
+          mat-cell
+          *matCellDef="let product"
+          [ngClass]="{ 'description-column': column === 'description' }"
+        >
+          <ng-container *ngIf="column === 'imageName'">
+            <img
+              *ngIf="product.imageName.length"
+              [src]="product.imageName[0]"
+              alt="Image"
+              class="product-image"
+            />
+          </ng-container>
+
+          <ng-container *ngIf="column === 'options'">
+            <div class="option" *ngFor="let option of product.options">
+              <p>
+                {{ option.measureValue }}L, {{ option.quantity }} Price:
+                {{ option.price }}
+              </p>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="column === 'actions'">
+            <div class="actions">
+              <button
+                (click)="editProduct(product)"
+                mat-icon-button
+                color="primary"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                (click)="deleteProduct(product.itemType, product.id)"
+                mat-icon-button
+                color="warn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              column !== 'imageName' &&
+              column !== 'options' &&
+              column !== 'actions'
+            "
+          >
+            {{ product[column] }}
+          </ng-container>
+        </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
   <app-product-editor [selectedProduct]="selectedProduct"></app-product-editor>
 </div>
