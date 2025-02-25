@@ -59,7 +59,7 @@ export class ProductEditorComponent {
 
   saveProduct(): void {
     if (!this.selectedProduct) {
-      console.error('Нет выбранного продукта');
+      console.error('Не обрано продукт');
       return;
     }
 
@@ -100,20 +100,20 @@ export class ProductEditorComponent {
         apiPath = 'snacks';
         break;
       default:
-        console.error('Unknown product type:', this.selectedProduct.itemType);
+        console.error('Невідомий тип продукту:', this.selectedProduct.itemType);
         return;
     }
     this.productService
       .updateProduct(apiPath, this.selectedProduct.id, formData)
       .subscribe({
         next: (response) => {
-          console.log('Продукт обновлен:', response);
+          console.log('Продукт оновлено:', response);
           if (this.selectedFile) {
             this.productService
               .uploadImage(this.selectedProduct!.id, this.selectedFile, apiPath)
               .subscribe({
                 next: (imgResponse) => {
-                  console.log('Изображение загружено:', imgResponse);
+                  console.log('Зображення завантажено:', imgResponse);
                   if (imgResponse.imageUrl) {
                     this.selectedProduct!.imageName = [imgResponse.imageUrl];
                     this.selectedProduct!.imageName.unshift(
@@ -125,14 +125,14 @@ export class ProductEditorComponent {
                   this.cancelEdit();
                 },
                 error: (error) =>
-                  console.error('Ошибка загрузки изображения:', error),
+                  console.error('Помилка завантаження зображення:', error),
               });
           } else {
             this.cancelEdit();
-            console.error('Файл не выбран, uploadImage не вызывается');
+            console.error('Файл не вибрано, uploadImage не викликається');
           }
         },
-        error: (error) => console.error('Ошибка обновления продукта:', error),
+        error: (error) => console.error('Помилка оновлення продукту:', error),
       });
   }
 
