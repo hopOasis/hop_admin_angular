@@ -1,53 +1,98 @@
-<form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-  <div>
-    <label for="type">Тип товара</label>
-    <select id="type" formControlName="type">
-      <option value="">Выберите тип товара</option>
-      <option value="snack">Закуска</option>
-      <option value="cider">Напиток</option>
-      <option value="beer">Десерт</option>
-    </select>
-  </div>
-
-  <div>
-    <label for="photo">Фотография</label>
-    <input type="file" (change)="onFileSelected($event)" />
-    <img
-      *ngIf="imagePreview"
-      [src]="imagePreview"
-      alt="Предпросмотр"
-      width="100"
-    />
-  </div>
-
-  <div>
-    <label for="name">Название</label>
-    <input id="name" formControlName="name" />
-  </div>
-
-  <div>
-    <label for="description">Описание</label>
-    <textarea id="description" formControlName="description"></textarea>
-  </div>
-
-  <div formArrayName="options">
+<div class="overlay" *ngIf="selectedProduct">
+  <div class="product-editor-modal">
+    <div class="block-img"></div>
     <div
-      *ngFor="let option of options.controls; let i = index"
-      [formGroupName]="i"
+      *ngFor="let img of selectedProduct.imageName; let i = index"
+      class="image-upload"
     >
-      <label for="price">Цена</label>
-      <input id="price" formControlName="price" />
+      <img [src]="img" alt="Image" class="product-image" />
+    </div>
+    <div *ngIf="imagePreview" class="image-upload">
+      <img [src]="imagePreview" alt="Предпросмотр" class="product-image" />
+    </div>
+    <div class="button-wrapper">
+      <button (click)="fileInput.click()">Загрузити нове фото</button>
+      <input
+        type="file"
+        #fileInput
+        style="display: none"
+        (change)="onFileSelected($event)"
+      />
+      <button (click)="deleteImg(0)">Видалити це фото</button>
+    </div>
 
-      <label for="quantity">Количество</label>
-      <input id="quantity" formControlName="quantity" />
+    <mat-form-field appearance="fill">
+      <mat-label>Тип продукту</mat-label>
+      <mat-select [(ngModel)]="selectedProduct.itemType">
+        <mat-option value="cider">Сидр</mat-option>
+        <mat-option value="beer">Пиво</mat-option>
+        <mat-option value="snack">Закуска</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-      <label for="weight">Вес</label>
-      <input id="weight" formControlName="weight" />
+    <mat-form-field appearance="fill">
+      <mat-label>Колір</mat-label>
+      <input matInput type="text" [(ngModel)]="selectedProduct.color" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Назва</mat-label>
+      <input
+        matInput
+        id="name"
+        [(ngModel)]="selectedProduct.name"
+        *ngIf="selectedProduct"
+      />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Опис</mat-label>
+      <textarea
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="3"
+        cdkAutosizeMaxRows="10"
+        matInput
+        id="description"
+        [(ngModel)]="selectedProduct.description"
+        *ngIf="selectedProduct"
+      ></textarea>
+    </mat-form-field>
+
+    <div
+      *ngFor="let option of selectedProduct.options; let i = index"
+      class="option-fields"
+    >
+      <mat-form-field appearance="fill">
+        <mat-label>Ціна</mat-label>
+        <input matInput type="number" [(ngModel)]="option.price" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Кількість</mat-label>
+        <input matInput type="number" [(ngModel)]="option.quantity" />
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="selectedProduct?.itemType === 'snack'"
+        appearance="fill"
+      >
+        <mat-label>Вага</mat-label>
+        <input matInput type="number" [(ngModel)]="option.measureValue" />
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="selectedProduct?.itemType !== 'snack'"
+        appearance="fill"
+      >
+        <mat-label>Объем</mat-label>
+        <input matInput type="number" [(ngModel)]="option.volume" />
+      </mat-form-field>
+    </div>
+
+    <div class="button-wrapper">
+      <button (click)="addOption()">Додаты опцію</button>
+      <button (click)="saveProduct()">Зберегти</button>
+      <button (click)="cancelEdit()">Скасувати</button>
     </div>
   </div>
-
-  <button type="button" (click)="addOption()">Добавить опцию</button>
-
-  <button type="submit">Добавить</button>
-  <button type="button" (click)="onCancel()">Отмена</button>
-</form>
+</div>

@@ -26,9 +26,11 @@ export class ProductService {
     );
   }
 
-  createProduct(product: Product, apiPath: string): Observable<Product> {
-    return this.http.post<Product>(`${this.apiBase}/${apiPath}`, product, {
-      headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+  createProduct(apiPath: string, data: Partial<Product>): Observable<Product> {
+    return this.http.post<Product>(`${this.apiBase}/${apiPath}`, data, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.tokenService.getToken()}`,
+      }),
     });
   }
 

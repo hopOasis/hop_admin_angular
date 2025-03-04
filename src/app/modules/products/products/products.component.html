@@ -67,4 +67,9 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
   <app-product-editor [selectedProduct]="selectedProduct"></app-product-editor>
+  <app-add-product
+    *ngIf="isAddingProduct"
+    [newProductId]="newProductId"
+    (cancel)="onCancelAddingProduct()"
+  ></app-add-product>
 </div>

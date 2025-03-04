@@ -28,12 +28,13 @@ img {
   text-align: center;
 }
 
-// .mat-column-options {
-//   text-align: center;
-// }
-
 td,
 th {
   padding: 0.3rem;
   min-width: 10rem;
+}
+table {
+  display: block;
+  height: calc(100vh - 15rem);
+  overflow-x: auto;
 }

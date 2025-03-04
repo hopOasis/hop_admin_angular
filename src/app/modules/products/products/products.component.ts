@@ -73,6 +73,7 @@ export class ProductsComponent implements OnInit {
         this.products = responses.flatMap((res) => res.content);
         this.filteredProducts = [...this.products];
       });
+      console.log(totalPages);
     });
   }
 
@@ -88,7 +89,6 @@ export class ProductsComponent implements OnInit {
   editProduct(product: Product): void {
     this.selectedProduct = { ...product };
     this.edit = true;
-    console.log('Edit:', this.selectedProduct);
     this.imagePreview = product.imageName ? product.imageName[0] : null;
   }
 
@@ -99,7 +99,16 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  addProduct() {
-    console.log();
+  newProductId: number = 0;
+  isAddingProduct = false;
+
+  addProduct(): void {
+    this.newProductId = this.products.length;
+    this.isAddingProduct = true;
+    console.log('Новый ID:', this.newProductId);
+  }
+
+  onCancelAddingProduct(): void {
+    this.isAddingProduct = false;
   }
 }

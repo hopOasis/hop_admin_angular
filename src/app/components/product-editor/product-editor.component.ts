@@ -75,6 +75,7 @@ export class ProductEditorComponent {
 
     let apiPath = '';
 
+    console.log(this.selectedProduct.name);
     switch (this.selectedProduct.itemType.toLowerCase()) {
       case 'cider':
         (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
@@ -86,9 +87,6 @@ export class ProductEditorComponent {
         break;
       case 'snack':
         (formData as Partial<Snack>).snackName = this.selectedProduct.name;
-        (formData as Partial<Snack>).description =
-          this.selectedProduct.description;
-        (formData as Partial<Snack>).imageName = [this.selectedFile!.name];
         (formData as Partial<Snack>).options = this.selectedProduct.options.map(
           (option) => ({
             id: option.id,
@@ -103,6 +101,8 @@ export class ProductEditorComponent {
         console.error('Невідомий тип продукту:', this.selectedProduct.itemType);
         return;
     }
+
+    console.log('do', formData);
     this.productService
       .updateProduct(apiPath, this.selectedProduct.id, formData)
       .subscribe({
