@@ -168,21 +168,6 @@ export class AddProductComponent {
     );
   }
 
-  deleteImg(id: number): void {
-    if (
-      this.selectedProduct &&
-      this.selectedProduct.imageName &&
-      this.selectedProduct.imageName[id]
-    ) {
-      this.productService
-        .deleteImage(
-          this.selectedProduct.itemType,
-          this.selectedProduct.imageName[id]
-        )
-        .subscribe({});
-    }
-  }
-
   addOption() {
     if (!this.selectedProduct || this.selectedProduct.options.length >= 2) {
       return;

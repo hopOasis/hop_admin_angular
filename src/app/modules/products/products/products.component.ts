@@ -58,6 +58,7 @@ export class ProductsComponent implements OnInit {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   selectedType: string = 'all';
+  productLoading: boolean = true;
 
   constructor(
     private productService: ProductService,
@@ -81,7 +82,8 @@ export class ProductsComponent implements OnInit {
         this.products = responses.flatMap((res) => res.content);
         this.filteredProducts = [...this.products];
       });
-      console.log(totalPages);
+      this.productLoading = false;
+      console.log(this.productLoading);
     });
   }
 

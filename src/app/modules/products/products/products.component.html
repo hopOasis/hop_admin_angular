@@ -1,4 +1,4 @@
-<div class="table-wrapper">
+<div *ngIf="!productLoading" class="table-wrapper">
   <div class="header-tablet">
     <div style="display: flex">
       <mat-form-field>
@@ -18,7 +18,15 @@
       Додати новий товар
     </button>
   </div>
-  <table mat-table [dataSource]="filteredProducts" class="mat-elevation-z8">
+  <div *ngIf="filteredProducts.length === 0" class="empty-table-alert">
+    Таблиця на разі пуста або ви маете не корректний пошук чи фільтр за типом
+  </div>
+  <table
+    *ngIf="filteredProducts.length"
+    mat-table
+    [dataSource]="filteredProducts"
+    class="mat-elevation-z8"
+  >
     <ng-container *ngFor="let column of displayedColumns">
       <ng-container matColumnDef="{{ column }}">
         <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>

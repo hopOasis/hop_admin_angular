@@ -17,6 +17,7 @@ img {
 .table-wrapper {
   max-width: 100%;
 }
+
 .actions {
   display: flex;
   flex-direction: row;
@@ -37,7 +38,11 @@ img {
 td,
 th {
   padding: 0.3rem;
-  min-width: 10rem;
+  width: 10%;
+}
+
+th:nth-child(2) {
+  width: 50%;
 }
 table {
   display: block;
