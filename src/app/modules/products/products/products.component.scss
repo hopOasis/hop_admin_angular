@@ -23,6 +23,12 @@ img {
   gap: 1rem;
   justify-content: center;
   text-align: center;
+  .edit {
+    color: #6faa60;
+  }
+  .delete {
+    color: #c44646;
+  }
 }
 .mat-column-actions {
   text-align: center;

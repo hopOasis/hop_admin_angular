@@ -1,5 +1,5 @@
 <div class="overlay" *ngIf="selectedProduct">
-  <div class="product-editor-modal">
+  <div class="product-add-modal">
     <div class="block-img"></div>
     <div
       *ngFor="let img of selectedProduct.imageName; let i = index"
@@ -93,7 +93,7 @@
 
     <div class="button-wrapper">
       <button (click)="addOption()">Додаты опцію</button>
-      <button (click)="saveProduct()" [disabled]="isFormInvalid()">
+      <button (click)="addProduct()" [disabled]="isFormInvalid()">
         Зберегти
       </button>
       <button (click)="cancelEdit()">Скасувати</button>

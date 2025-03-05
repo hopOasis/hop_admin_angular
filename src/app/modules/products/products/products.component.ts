@@ -117,7 +117,6 @@ export class ProductsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        // Если пользователь подтвердил удаление, вызываем метод для удаления товара
         this.executeDeleteProduct(itemType, productId);
       }
     });
@@ -127,7 +126,8 @@ export class ProductsComponent implements OnInit {
     this.productService.deleteProduct(itemType, productId).subscribe(() => {
       console.log(`Продукт з ID ${id} типу ${itemType} видалено`);
     });
-    console.log(`Товар с id ${productId} типа ${itemType} был удален.`);
+    this.ngOnInit();
+    console.log(`Товар з id ${productId} типу ${itemType} видалено.`);
   }
 
   newProductId: number = 0;

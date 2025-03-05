@@ -80,7 +80,7 @@ export class AddProductComponent {
     }
   }
 
-  saveProduct(): void {
+  addProduct(): void {
     if (!this.selectedProduct) {
       console.error('Не обрано продукт');
       return;
@@ -121,7 +121,6 @@ export class AddProductComponent {
         apiPath = 'snacks';
         break;
       default:
-        console.error('Невідомий тип продукту:', this.selectedProduct);
         return;
     }
 
@@ -151,7 +150,7 @@ export class AddProductComponent {
       )
       .subscribe({
         next: () => this.cancelEdit(),
-        error: (error) => console.error('Помилка оновлення продукту:', error),
+        error: (error) => console.error('Помилка додавання продукту:', error),
       });
   }
 

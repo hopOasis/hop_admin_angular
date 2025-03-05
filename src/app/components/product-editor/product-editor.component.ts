@@ -102,7 +102,6 @@ export class ProductEditorComponent {
         return;
     }
 
-    console.log('do', formData);
     this.productService
       .updateProduct(apiPath, this.selectedProduct.id, formData)
       .subscribe({

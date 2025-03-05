@@ -24,6 +24,9 @@
   display: flex;
   flex-direction: row;
 }
+.selected {
+  border: 2px solid red;
+}
 
 .image-upload {
   text-align: center;

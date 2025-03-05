@@ -1,14 +1,15 @@
 <div class="overlay" *ngIf="selectedProduct">
   <div class="product-editor-modal">
-    <div class="block-img"></div>
-    <div
-      *ngFor="let img of selectedProduct.imageName; let i = index"
-      class="image-upload"
-    >
-      <img [src]="img" alt="Image" class="product-image" />
-    </div>
-    <div *ngIf="imagePreview" class="image-upload">
-      <img [src]="imagePreview" alt="Предпросмотр" class="product-image" />
+    <div class="block-img">
+      <div
+        *ngFor="let img of selectedProduct.imageName; let i = index"
+        class="image-upload"
+      >
+        <img [src]="img" alt="Image" class="product-image" />
+        <div *ngIf="imagePreview" class="image-upload">
+          <img [src]="imagePreview" alt="Предпросмотр" class="product-image" />
+        </div>
+      </div>
     </div>
     <div class="button-wrapper">
       <button (click)="fileInput.click()">Загрузити нове фото</button>

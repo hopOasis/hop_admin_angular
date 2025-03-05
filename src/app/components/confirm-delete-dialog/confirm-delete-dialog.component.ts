@@ -7,12 +7,7 @@ import { BrowserModule } from '@angular/platform-browser';
 @Component({
   selector: 'app-confirm-delete-dialog',
   standalone: true,
-  imports: [
-    BrowserModule,
-    MatDialogModule, // Добавьте этот модуль
-    MatButtonModule, // Добавьте этот модуль
-    MatIconModule, // Если нужно, добавьте и этот модуль
-  ],
+  imports: [BrowserModule, MatDialogModule, MatButtonModule, MatIconModule],
   templateUrl: './confirm-delete-dialog.component.html',
   styleUrls: ['./confirm-delete-dialog.component.scss'],
 })
@@ -20,10 +15,10 @@ export class ConfirmDeleteDialogComponent {
   constructor(public dialogRef: MatDialogRef<ConfirmDeleteDialogComponent>) {}
 
   onNoClick(): void {
-    this.dialogRef.close(false); // Закрытие диалога и возврат значения false
+    this.dialogRef.close(false);
   }
 
   onYesClick(): void {
-    this.dialogRef.close(true); // Закрытие диалога и возврат значения true
+    this.dialogRef.close(true);
   }
 }

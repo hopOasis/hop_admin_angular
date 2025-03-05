@@ -47,6 +47,7 @@
           <ng-container *ngIf="column === 'actions'">
             <div class="actions">
               <button
+                class="edit"
                 (click)="editProduct(product)"
                 mat-icon-button
                 color="primary"
@@ -54,6 +55,7 @@
                 <mat-icon>edit</mat-icon>
               </button>
               <button
+                class="delete"
                 (click)="deleteProduct(product.itemType, product.id)"
                 mat-icon-button
                 color="warn"
