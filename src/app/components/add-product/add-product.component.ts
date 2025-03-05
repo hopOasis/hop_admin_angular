@@ -17,6 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { ProductEditorComponent } from '../product-editor/product-editor.component';
+import { concatMap, of } from 'rxjs';
 
 @Component({
   selector: 'app-add-product',
@@ -124,35 +125,48 @@ export class AddProductComponent {
         return;
     }
 
-    console.log(formData);
-    this.productService.createProduct(apiPath, formData).subscribe({
-      next: (response) => {
-        console.log('Продукт додано:', response);
-        if (this.selectedFile) {
-          console.log(response.id);
-          this.productService
-            .uploadImage(response!.id, this.selectedFile, apiPath)
-            .subscribe({
-              next: (imgResponse) => {
-                console.log('Зображення завантажено:', imgResponse);
-                if (imgResponse.imageUrl) {
-                  this.selectedProduct!.imageName = [imgResponse.imageUrl];
-                  this.selectedProduct!.imageName.unshift(imgResponse.imageUrl);
-                  this.imagePreview = imgResponse.imageUrl;
-                  this.selectedFile = null;
-                }
-                this.cancelEdit();
-              },
-              error: (error) =>
-                console.error('Помилка завантаження зображення:', error),
-            });
-        } else {
-          this.cancelEdit();
-          console.error('Файл не вибрано, uploadImage не викликається');
-        }
-      },
-      error: (error) => console.error('Помилка оновлення продукту:', error),
-    });
+    this.productService
+      .createProduct(apiPath, formData)
+      .pipe(
+        concatMap((response) => {
+          if (this.selectedFile) {
+            return this.productService
+              .uploadImage(response!.id, this.selectedFile, apiPath)
+              .pipe(
+                concatMap((imgResponse) => {
+                  console.log('Зображення завантажено:', imgResponse);
+                  if (imgResponse.imageUrl) {
+                    this.selectedProduct!.imageName = [imgResponse.imageUrl];
+                    this.imagePreview = imgResponse.imageUrl;
+                    this.selectedFile = null;
+                  }
+                  return of(response);
+                })
+              );
+          } else {
+            console.error('Файл не вибрано, uploadImage не викликається');
+            return of(response);
+          }
+        })
+      )
+      .subscribe({
+        next: () => this.cancelEdit(),
+        error: (error) => console.error('Помилка оновлення продукту:', error),
+      });
+  }
+
+  isFormInvalid(): boolean {
+    if (!this.selectedProduct) return true;
+
+    const { name, description, itemType, options } = this.selectedProduct;
+    if (!name || !description || !itemType) return true;
+
+    return options.some(
+      (option) =>
+        !option.price ||
+        !option.quantity ||
+        (itemType === 'snack' ? !option.measureValue : !option.volume)
+    );
   }
 
   deleteImg(id: number): void {

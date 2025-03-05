@@ -1,10 +1,21 @@
 <div class="table-wrapper">
   <div class="header-tablet">
-    <mat-form-field>
-      <input matInput (keyup)="Filter($event)" placeholder="Ex. ium" #input />
-    </mat-form-field>
+    <div style="display: flex">
+      <mat-form-field>
+        <input matInput (keyup)="Filter($event)" placeholder="Пошук" #input />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Тип продукту</mat-label>
+        <mat-select (selectionChange)="onTypeChange($event.value)">
+          <mat-option value="all">All type</mat-option>
+          <mat-option value="cider">Cidre</mat-option>
+          <mat-option value="beer">Beer</mat-option>
+          <mat-option value="snack">Snack</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
     <button mat-raised-button (click)="addProduct()" color="primary">
-      Добавити новий товар
+      Додати новий товар
     </button>
   </div>
   <table mat-table [dataSource]="filteredProducts" class="mat-elevation-z8">

@@ -151,6 +151,20 @@ export class ProductEditorComponent {
     }
   }
 
+  addOption() {
+    if (!this.selectedProduct || this.selectedProduct.options.length >= 2) {
+      return;
+    }
+
+    this.selectedProduct.options.push({
+      id: this.selectedProduct.options.length,
+      price: 0,
+      quantity: 0,
+      measureValue: this.selectedProduct.itemType === 'snack' ? 0 : undefined,
+      volume: this.selectedProduct.itemType !== 'snack' ? 0 : undefined,
+    });
+  }
+
   cancelEdit(): void {
     this.selectedProduct = null;
   }

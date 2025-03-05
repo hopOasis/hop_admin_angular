@@ -13,6 +13,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { ProductEditorComponent } from '../../../components/product-editor/product-editor.component';
 import { AddProductComponent } from '../../../components/add-product/add-product.component';
+import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import id from '@angular/common/locales/id';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-product',
@@ -29,6 +32,7 @@ import { AddProductComponent } from '../../../components/add-product/add-product
     MatCardModule,
     AddProductComponent,
     ProductEditorComponent,
+    ConfirmDeleteDialogComponent,
   ],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
@@ -53,8 +57,12 @@ export class ProductsComponent implements OnInit {
 
   products: Product[] = [];
   filteredProducts: Product[] = [];
+  selectedType: string = 'all';
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.getAllProducts();
@@ -81,9 +89,21 @@ export class ProductsComponent implements OnInit {
     const filterValue = (event.target as HTMLInputElement).value
       .trim()
       .toLowerCase();
-    this.filteredProducts = this.products.filter((product) =>
-      product.name.toLowerCase().includes(filterValue)
-    );
+    this.applyFilters(filterValue, this.selectedType);
+  }
+
+  onTypeChange(type: string): void {
+    this.selectedType = type;
+    this.applyFilters('', this.selectedType);
+  }
+
+  applyFilters(query: string, type: string): void {
+    this.filteredProducts = this.products.filter((product) => {
+      const matchesQuery = product.name.toLowerCase().includes(query);
+      const matchesType =
+        type === 'all' || product.itemType.toLowerCase() === type;
+      return matchesQuery && matchesType;
+    });
   }
 
   editProduct(product: Product): void {
@@ -92,11 +112,22 @@ export class ProductsComponent implements OnInit {
     this.imagePreview = product.imageName ? product.imageName[0] : null;
   }
 
-  deleteProduct(itemType: string, id: number): void {
-    console.log('type', itemType);
-    this.productService.deleteProduct(itemType, id).subscribe(() => {
+  deleteProduct(itemType: string, productId: number): void {
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Если пользователь подтвердил удаление, вызываем метод для удаления товара
+        this.executeDeleteProduct(itemType, productId);
+      }
+    });
+  }
+
+  executeDeleteProduct(itemType: string, productId: number): void {
+    this.productService.deleteProduct(itemType, productId).subscribe(() => {
       console.log(`Продукт з ID ${id} типу ${itemType} видалено`);
     });
+    console.log(`Товар с id ${productId} типа ${itemType} был удален.`);
   }
 
   newProductId: number = 0;

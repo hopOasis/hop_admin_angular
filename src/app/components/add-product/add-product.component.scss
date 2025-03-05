@@ -12,6 +12,8 @@
 }
 
 .product-editor-modal {
+  overflow-x: auto;
+  max-height: 80%;
   background: white;
   padding: 1.25rem;
   border-radius: 0.5rem;
@@ -47,6 +49,11 @@
 
 .button-wrapper button:hover {
   background: #5c6388;
+}
+
+.button-wrapper button:disabled:hover {
+  background-color: inherit;
+  cursor: inherit;
 }
 
 mat-form-field {
