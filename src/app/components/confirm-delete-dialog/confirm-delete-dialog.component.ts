@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import {
+  MAT_DIALOG_DATA,
+  MatDialogModule,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -12,7 +16,10 @@ import { BrowserModule } from '@angular/platform-browser';
   styleUrls: ['./confirm-delete-dialog.component.scss'],
 })
 export class ConfirmDeleteDialogComponent {
-  constructor(public dialogRef: MatDialogRef<ConfirmDeleteDialogComponent>) {}
+  constructor(
+    public dialogRef: MatDialogRef<ConfirmDeleteDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { text: string }
+  ) {}
 
   onNoClick(): void {
     this.dialogRef.close(false);

@@ -115,7 +115,9 @@ export class ProductsComponent implements OnInit {
   }
 
   deleteProduct(itemType: string, productId: number): void {
-    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent);
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      data: { text: 'Ви дійсно хочете видалити цей товар?' },
+    });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
