@@ -28,8 +28,8 @@ export class OrdersService {
     };
     const token = this.tokenService.getToken();
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`, // Добавляем токен в заголовок
-      'Content-Type': 'application/json', // Указываем тип контента
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     });
   
     return this.http.put(url, updatedOrder, { headers });

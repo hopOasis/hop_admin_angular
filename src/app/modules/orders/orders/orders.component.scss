@@ -1,24 +1,50 @@
 .processing-row {
-    background-color: #e0f7fa; /* светло-голубой */
+    background-color: #e0f7fa; 
   }
   
   .accepted-row {
-    background-color: #c8e6c9; /* светло-зеленый */
+    background-color: #c8e6c9; 
   }
   
   .in-progress-row {
-    background-color: #fff9c4; /* светло-желтый */
+    background-color: #fff9c4; 
   }
   
   .delivered-row {
-    background-color: #cccbcb; /* светло-серый */
+    background-color: #cccbcb; 
   }
   
   .completed-row {
-    background-color: #ffccbc; /* светло-розовый */
+    background-color: #ffccbc;
   }
   
   .canceled-row {
-    background-color: #f8bbd0; /* светло-розовый */
+    background-color: #f8bbd0; 
+}
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  mat-icon {
+    cursor: pointer;
   }
-  
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+table {
+ td {
+   .ng-star-inserted {
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 100px;
+   }
+   .mdc-text-field--filled {
+     background: transparent !important;
+   }
+  } 
+}
+svg.ng-tns-c1711764913-4 {
+  display: none;
+}

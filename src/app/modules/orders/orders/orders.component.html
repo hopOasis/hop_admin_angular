@@ -58,15 +58,17 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef>Actions</th>
       <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        <mat-icon *ngIf="order.pendingStatus && order.pendingStatus !== order.deliveryStatus"
+        <div class="actions">
+          <mat-icon *ngIf="order.pendingStatus && order.pendingStatus !== order.deliveryStatus"
                   (click)="changeStatus(order, order.pendingStatus)"
                   color="primary"
-                  style="color: green; cursor: pointer;">
+                  >
           done
         </mat-icon>
-        <button mat-icon-button color="warn" (click)="deleteOrder(order.id)">
-          <mat-icon>delete</mat-icon>
-        </button>
+        <mat-icon  (click)="deleteOrder(order.id)">
+          delete
+        </mat-icon>
+        </div>
       </td>
     </ng-container>
 
