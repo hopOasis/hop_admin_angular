@@ -1,92 +1,76 @@
 <div>
-    <!-- Форма для выбора статуса -->
-    <mat-form-field appearance="fill">
-      <mat-label>Статус замовлення</mat-label>
-      <mat-select (selectionChange)="onStatusChange($event.value)">
-        <mat-option value="all">Всі</mat-option>
-        <mat-option value="processing">В обробці</mat-option>
-        <mat-option value="accepted">Прийнято</mat-option>
-        <mat-option value="in_progress">В роботі</mat-option>
-        <mat-option value="delivered">Доставлено</mat-option>
-        <mat-option value="completed">Завершено</mat-option>
-        <mat-option value="canceled">Скасовано</mat-option>
-      </mat-select>
-    </mat-form-field>
-  
-    <!-- Таблица с заказами -->
-    <table mat-table [dataSource]="filteredOrders" class="mat-elevation-z8">
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let order">{{ order.id }}</td>
-      </ng-container>
-  
-      <ng-container matColumnDef="user">
-        <th mat-header-cell *matHeaderCellDef>User</th>
-        <td mat-cell *matCellDef="let order">
-          {{ order.firstName }} <br> {{ order.lastName }}<br>
-          {{ order.deliveryAddress }}
-        </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="contacts">
-        <th mat-header-cell *matHeaderCellDef>Contact</th>
-        <td mat-cell *matCellDef="let order">
-          <div>{{ order.customerPhoneNumber }}</div>
-          <div>{{ order.customerEmail }}</div>
-        </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="items">
-        <th mat-header-cell *matHeaderCellDef>Basket</th>
-        <td mat-cell *matCellDef="let order">
-          <div *ngFor="let item of order.items">
-            {{ item.itemTitle }} ({{ item.itemType }}) x{{ item.quantity }} - {{ item.price }}
-          </div>
-        </td>
-      </ng-container>
-  
-      <ng-container matColumnDef="totalPrice">
-        <th mat-header-cell *matHeaderCellDef>Sum</th>
-        <td mat-cell *matCellDef="let order">{{ order.totalPrice }}</td>
-      </ng-container>
-  
-      <ng-container matColumnDef="deliveryStatus">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let order">
-          <mat-form-field appearance="fill">
-            <mat-select placeholder="Оберіть статус" (selectionChange)="editStatus(order, $event.value)">
-              <mat-option value="PROCESSING">В обробці</mat-option>
-                <mat-option value="ACCEPTED">Прийнято</mat-option>
-                <mat-option value="IN_PROGRESS">В роботі</mat-option>
-                <mat-option value="DELIVERED">Доставлено</mat-option>
-                <mat-option value="COMPLETED">Завершено</mat-option>
-                <mat-option value="CANCELED">Скасовано</mat-option>
-            </mat-select>
-          </mat-form-field>
-          
-          
-          
-          
-        </td>
-      </ng-container>
-      
-  
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let order">
-          <mat-icon *ngIf="order.pendingStatus && order.pendingStatus !== order.deliveryStatus"
-                    (click)="confirmStatusChange(order)"
-                    color="primary"
-                    style="color: green; cursor: pointer;">
-            done
-          </mat-icon>
-          <button mat-icon-button color="warn" (click)="deleteOrder(order.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
-  
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </div>
+  <mat-form-field appearance="fill">
+    <mat-label>Фільтр за статусом</mat-label>
+    <mat-select (selectionChange)="onStatusChange($event.value)">
+      <mat-option value="all">All</mat-option>
+      <mat-option *ngFor="let status of orderStatuses" [value]="status.value">{{ status.label }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+
+  <table mat-table [dataSource]="filteredOrders" class="mat-elevation-z8">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">{{ order.id }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="user">
+      <th mat-header-cell *matHeaderCellDef>User</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
+        {{ order.firstName }} <br> {{ order.lastName }}<br>
+        {{ order.deliveryAddress }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="contacts">
+      <th mat-header-cell *matHeaderCellDef>Contact</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
+        <div>{{ order.customerPhoneNumber }}</div>
+        <div>{{ order.customerEmail }}</div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="items">
+      <th mat-header-cell *matHeaderCellDef>Basket</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
+        <div *ngFor="let item of order.items">
+          {{ item.itemTitle }} ({{ item.itemType }}) x{{ item.quantity }} - {{ item.price }}
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="totalPrice">
+      <th mat-header-cell *matHeaderCellDef>Sum</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">{{ order.totalPrice }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="deliveryStatus">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
+        <mat-form-field appearance="fill">
+          <mat-select [placeholder]="order.deliveryStatus.toLocaleLowerCase()" (selectionChange)="editStatus(order, $event.value)">
+            <mat-option *ngFor="let status of orderStatuses" [value]="status.value">{{ status.value }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
+        <mat-icon *ngIf="order.pendingStatus && order.pendingStatus !== order.deliveryStatus"
+                  (click)="changeStatus(order, order.pendingStatus)"
+                  color="primary"
+                  style="color: green; cursor: pointer;">
+          done
+        </mat-icon>
+        <button mat-icon-button color="warn" (click)="deleteOrder(order.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
