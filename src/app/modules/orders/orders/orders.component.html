@@ -6,6 +6,9 @@
       <mat-option *ngFor="let status of orderStatuses" [value]="status.value">{{ status.label }}</mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-form-field>
+    <input matInput (keyup)="Filter($event)" #input />
+  </mat-form-field>
 
 
   <table mat-table [dataSource]="filteredOrders" class="mat-elevation-z8">
@@ -65,7 +68,7 @@
                   >
           done
         </mat-icon>
-        <mat-icon  (click)="deleteOrder(order.id)">
+        <mat-icon  >
           delete
         </mat-icon>
         </div>

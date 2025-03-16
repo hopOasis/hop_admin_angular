@@ -22,17 +22,20 @@ export class OrdersService {
   }
 
   changeOrderStatus(orderId: number, orderData: any): Observable<any> {
-    const url = `https://hopoasis.onrender.com/orders/${orderId}`;
-    const updatedOrder = {
-      ...orderData,
-    };
     const token = this.tokenService.getToken();
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     });
-  
-    return this.http.put(url, updatedOrder, { headers });
+    return this.http.put(`${this.apiBase}/orders/${orderId}`, orderData, { headers });
   }
+
+  deleteOrder(orderId: number): Observable<void> {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
   
+    return this.http.delete<void>(`${this.apiBase}/orders/${orderId}`, { headers });
+  }
 }

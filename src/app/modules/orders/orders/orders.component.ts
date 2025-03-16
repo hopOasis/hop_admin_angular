@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { OrdersService } from '../../../core/services/orders/orders.service';
-
+import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -12,6 +14,9 @@ import { OrdersService } from '../../../core/services/orders/orders.service';
     CommonModule,
     MatTableModule,
     MatSelectModule,
+    MatInputModule,
+    MatDialog,
+    ConfirmDeleteDialogComponent,
     MatIconModule
   ],
   templateUrl: './orders.component.html',
@@ -22,6 +27,8 @@ export class OrdersComponent implements OnInit {
   filteredOrders: any[] = [];
   selectedStatus: string = 'all';
   displayedColumns = ['id', 'user', 'contacts', 'items', 'totalPrice', 'deliveryStatus', 'actions'];
+  selectedOrderId: string = '';
+  @ViewChild('input') inputRef!: ElementRef;
   orderStatuses = [
     { value: 'all', label: 'All' },
     { value: 'processing', label: 'Processing' },
@@ -51,6 +58,7 @@ export class OrdersComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -67,22 +75,37 @@ export class OrdersComponent implements OnInit {
     );
   }
 
-  onStatusChange(status: string): void {
-    this.selectedStatus = status;
-    this.applyFilters();
+   applyFilters(query: string): void {
+    this.filteredOrders = this.orders.filter(order => {
+      const matchesStatus = this.selectedStatus === 'all' 
+        || order.deliveryStatus?.toLowerCase() === this.selectedStatus.toLowerCase();
+      const matchesQuery = query === '' 
+        || order.id.toString().toLowerCase().includes(query.toLowerCase());
+      return matchesStatus && matchesQuery;
+    });
   }
 
-  applyFilters(): void {
-    this.filteredOrders = this.selectedStatus === 'all'
-      ? [...this.orders]
-      : this.orders.filter(order => order.deliveryStatus?.toLowerCase() === this.selectedStatus);
+  onStatusChange(status: string): void {
+    this.selectedStatus = status;
+    const query = this.inputRef.nativeElement.value.trim().toLowerCase();
+    this.applyFilters(query);
+  }
+
+  Filter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.applyFilters(filterValue);
   }
 
   deleteOrder(orderId: number): void {
-    this.orders = this.orders.filter(order => order.id !== orderId);
-    this.applyFilters();
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      data: { text: 'Ви дійсно хочете скасувати цей заказ? Після підтвердження ви не зможете редагувати та змінювати цей заказ' },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.deleteOrder(orderId);
+      }
+    });
   }
-
   editStatus(order: any, status: string): void {
     order.pendingStatus = status;
   }
