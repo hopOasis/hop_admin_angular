@@ -7,6 +7,7 @@ import { OrdersService } from '../../../core/services/orders/orders.service';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
+import { Order } from '../../../core/models/order.model';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -110,22 +111,23 @@ export class OrdersComponent implements OnInit {
     order.pendingStatus = status;
   }
 
-  changeStatus(order: any, newStatus: string): void {
-    const orderData = {
+  changeStatus(order: Order, newStatus: string): void {
+    const orderData: Omit<Order, 'id' | 'pendingStatus'> = {
       customerPhoneNumber: order.customerPhoneNumber,
       paymentType: order.paymentType,
       deliveryMethod: order.deliveryMethod,
       deliveryAddress: order.deliveryAddress,
       deliveryStatus: newStatus.toLocaleUpperCase(),
     };
-
+  
     this.ordersService.changeOrderStatus(order.id, orderData).subscribe(
       () => {
         order.pendingStatus = null;
         console.log('Статус успішно оновлено');
-        this.ngOnInit()
+        this.ngOnInit();
       },
       (error) => console.error('Помилка оновлення статусу', error)
     );
   }
+  
 }
