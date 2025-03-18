@@ -8,6 +8,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { ReviewsService } from '../../../core/services/reviews/reviews.service';
 import { MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 
 @Component({
@@ -18,9 +21,12 @@ import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete
     MatTableModule,
     MatSelectModule,
     MatIconModule,
+    FormsModule,
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
+    MatInputModule, 
+    MatFormFieldModule,
     ConfirmDeleteDialogComponent
   ],
   templateUrl: './reviews.component.html',
@@ -28,8 +34,10 @@ import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete
 })
 export class ReviewsComponent implements OnInit {
   reviews: any[] = [];
-  reviewLoading = true;
+  filteredReviews: any[] = [];
   displayedColumns: string[] = ['id', 'user', 'content', 'date', 'actions'];
+  searchText: string = '';
+  filterDate: string = '';
 
   constructor(private reviewsService: ReviewsService, private dialog: MatDialog) {}
 
@@ -38,10 +46,10 @@ export class ReviewsComponent implements OnInit {
   }
 
   getAllReviews(): void {
-    this.reviewsService.getAllReviews().subscribe((data: any) => {
-      this.reviews = data;
-      this.reviewLoading = false;
-      console.log(this.reviews);
+    this.reviewsService.getAllReviews().subscribe((reviews: any) => {
+      this.reviews = reviews;
+      this.reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      this.filteredReviews = [...this.reviews];
     });
   }
 
@@ -75,4 +83,14 @@ export class ReviewsComponent implements OnInit {
       }
     );
   }
+  applyFilters(): void {
+    const query = this.searchText.trim().toLowerCase();
+    const date = this.filterDate;
+  
+    this.filteredReviews = this.reviews.filter((review) => {
+      const matchesQuery = review.content?.toLowerCase().includes(query) || review.id.toString().includes(query);
+      return matchesQuery 
+    });
+  }
+  
 }
