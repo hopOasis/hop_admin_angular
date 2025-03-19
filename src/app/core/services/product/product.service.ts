@@ -1,36 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse, Product } from '../../../core/models/product.model';
+import { BaseService } from '../base.service';
 import { TokenService } from '../token/token.service';
-import { environment } from '../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProductService {
-  private readonly apiBase = environment.apiBase;
-
-  constructor(private http: HttpClient, private tokenService: TokenService) {}
-
-  private getAuthHeaders(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.tokenService.getToken()}`,
-      'Content-Type': 'application/json',
-    });
+export class ProductService extends BaseService {
+  constructor(
+    protected override http: HttpClient,
+    protected override tokenService: TokenService
+  ) {
+    super(http, tokenService);
   }
 
   getProducts(page: number, size: number): Observable<ApiResponse> {
     return this.http.get<ApiResponse>(
-      `${this.apiBase}/all-products?page=${page}&size=${size}`
+      `${this.apiBase}/all-products?page=${page}&size=${size}`,
+      { headers: this.getHeaders() }
     );
   }
 
   createProduct(apiPath: string, data: Partial<Product>): Observable<Product> {
     return this.http.post<Product>(`${this.apiBase}/${apiPath}`, data, {
-      headers: new HttpHeaders({
-        Authorization: `Bearer ${this.tokenService.getToken()}`,
-      }),
+      headers: this.getHeaders(),
     });
   }
 
@@ -43,9 +38,7 @@ export class ProductService {
       `${this.apiBase}/${apiPath}/${productId}`,
       data,
       {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${this.tokenService.getToken()}`,
-        }),
+        headers: this.getHeaders(),
       }
     );
   }
@@ -53,7 +46,7 @@ export class ProductService {
   deleteProduct(productType: string, id: number): Observable<void> {
     const itemType = productType.toLowerCase();
     return this.http.delete<void>(`${this.apiBase}/${itemType}s/${id}`, {
-      headers: this.getAuthHeaders(),
+      headers: this.getHeaders(),
     });
   }
 
@@ -68,19 +61,16 @@ export class ProductService {
       `${this.apiBase}/${apiPath}/${productId}/images`,
       formData,
       {
-        headers: new HttpHeaders({
-          Authorization: `Bearer ${this.tokenService.getToken()}`,
-        }),
+        headers: this.getHeaders(),
       }
     );
   }
 
   deleteImage(productType: string, fileName: string): Observable<void> {
     const itemType = productType.toLowerCase();
-    console.log(itemType, fileName);
     return this.http.delete<void>(`${this.apiBase}/${itemType}s/images`, {
       body: { name: fileName },
-      headers: this.getAuthHeaders(),
+      headers: this.getHeaders(),
     });
   }
 }

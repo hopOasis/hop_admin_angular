@@ -39,12 +39,7 @@
 
     <mat-form-field appearance="fill">
       <mat-label>Назва</mat-label>
-      <input
-        matInput
-        id="name"
-        [(ngModel)]="selectedProduct.name"
-        *ngIf="selectedProduct"
-      />
+      <input matInput id="name" [(ngModel)]="selectedProduct.name" />
     </mat-form-field>
 
     <mat-form-field appearance="fill">
@@ -56,7 +51,6 @@
         matInput
         id="description"
         [(ngModel)]="selectedProduct.description"
-        *ngIf="selectedProduct"
       ></textarea>
     </mat-form-field>
 
@@ -86,17 +80,31 @@
         *ngIf="selectedProduct?.itemType !== 'snack'"
         appearance="fill"
       >
-        <mat-label>Объем</mat-label>
+        <mat-label>Об'єм</mat-label>
         <input matInput type="number" [(ngModel)]="option.volume" />
       </mat-form-field>
     </div>
 
     <div class="button-wrapper">
-      <button (click)="addOption()">Додаты опцію</button>
-      <button (click)="addProduct()" [disabled]="isFormInvalid()">
+      <button
+        [disabled]="selectedProduct.options.length >= 2"
+        mat-button
+        (click)="addOption()"
+      >
+        Додати опцію
+      </button>
+    </div>
+
+    <div class="button-wrapper">
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="addProduct()"
+        [disabled]="isFormInvalid()"
+      >
         Зберегти
       </button>
-      <button (click)="cancelEdit()">Скасувати</button>
+      <button mat-button (click)="cancelEdit()">Скасувати</button>
     </div>
   </div>
 </div>

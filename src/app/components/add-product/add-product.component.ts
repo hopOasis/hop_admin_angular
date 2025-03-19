@@ -1,26 +1,28 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import {
-  Product,
-  Cider,
-  Beer,
-  Snack,
-  SnackOptions,
-} from '../../core/models/product.model';
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy,
+} from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Beer, Cider, Product, Snack } from '../../core/models/product.model';
 import { ProductService } from '../../core/services/product/product.service';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
-import { ProductEditorComponent } from '../product-editor/product-editor.component';
-import { concatMap, of } from 'rxjs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { NgIf } from '@angular/common';
 
 @Component({
   selector: 'app-add-product',
+  templateUrl: './add-product.component.html',
   standalone: true,
   imports: [
     CommonModule,
@@ -32,49 +34,105 @@ import { concatMap, of } from 'rxjs';
     MatIconModule,
     MatSelectModule,
     MatCardModule,
-    ProductEditorComponent,
+    NgIf,
   ],
-  templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.scss'],
 })
-export class AddProductComponent {
+export class AddProductComponent implements OnDestroy {
   @Input() newProductId: number = 0;
   @Output() cancel = new EventEmitter<void>();
-  constructor(private productService: ProductService) {}
-
-  cancelEdit(): void {
-    this.cancel.emit();
-  }
-  @Input() selectedProduct: Product | null = {
-    id: 0,
-    name: '',
-    description: '',
-    options: [
-      {
-        id: 0,
-        price: 0,
-        quantity: 0,
-        volume: 0,
-      },
-    ],
-    imageName: [],
-    color: '',
-    averageRating: 0,
-    ratingCount: 0,
-    specialOfferIds: [],
-    itemType: '',
-  };
-
+  @Input() selectedProduct: Product | null = null;
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
+  private destroy$ = new Subject<void>();
+
+  constructor(private productService: ProductService) {}
+  ngOnInit(): void {
+    if (!this.selectedProduct) {
+      this.initializeNewProduct();
+    }
+  }
+
+  private initializeNewProduct(): void {
+    this.selectedProduct = {
+      id: this.newProductId,
+      name: '',
+      description: '',
+      itemType: 'beer',
+      options: [],
+      imageName: [],
+      averageRating: 0,
+      ratingCount: 0,
+      specialOfferIds: [],
+    };
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  addOption(): void {
+    if (!this.selectedProduct) return;
+
+    const newOption: any = {
+      id: undefined,
+      quantity: 0,
+      price: 0,
+    };
+
+    switch (this.selectedProduct.itemType.toLowerCase()) {
+      case 'cider':
+      case 'beer':
+        newOption.volume = 0;
+        break;
+      case 'snack':
+        newOption.measureValue = 0;
+        break;
+    }
+
+    this.selectedProduct.options.push(newOption);
+  }
+
+  isFormInvalid(): boolean {
+    if (!this.selectedProduct) return true;
+    const optionsCountValid =
+      this.selectedProduct.options.length < 1 ||
+      this.selectedProduct.options.length > 2;
+
+    if (
+      !this.selectedProduct.name?.trim() ||
+      !this.selectedProduct.description?.trim()
+    ) {
+      return true;
+    }
+
+    return (
+      !this.selectedProduct.name?.trim() ||
+      !this.selectedProduct.description?.trim() ||
+      optionsCountValid ||
+      this.selectedProduct.options.some((option) => {
+        if (option.quantity <= 0 || option.price <= 0) return true;
+        switch (this.selectedProduct?.itemType.toLowerCase()) {
+          case 'cider':
+          case 'beer':
+            return (option as any).volume <= 0;
+          case 'snack':
+            return (option as any).measureValue <= 0;
+          default:
+            return true;
+        }
+      })
+    );
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
+    if (input.files?.length) {
       this.selectedFile = input.files[0];
       const reader = new FileReader();
       reader.onload = () => {
-        this.imagePreview = reader.result as string;
+        this.imagePreview = reader.result;
       };
       reader.readAsDataURL(this.selectedFile);
     }
@@ -82,103 +140,116 @@ export class AddProductComponent {
 
   addProduct(): void {
     if (!this.selectedProduct) {
-      console.error('Не обрано продукт');
+      console.error('Продукт не вибрано');
       return;
     }
 
-    let formData: Partial<Product> = {
-      description: this.selectedProduct.description,
-      options: this.selectedProduct.options.map((option) => ({
-        quantity: option.quantity,
-        price: option.price,
-        volume: option.volume,
-      })),
-    };
-    let apiPath = '';
+    let formData: Partial<Product>;
+    const apiPath = this.getApiPath(this.selectedProduct.itemType);
 
-    switch (this.selectedProduct.itemType.toLowerCase()) {
-    case 'cider':
-      (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
-      (formData as Partial<Cider>).cidreColor =
-          this.selectedProduct.color?.toLocaleUpperCase();
-      apiPath = 'ciders';
-      break;
-    case 'beer':
-      (formData as Partial<Beer>).beerName = this.selectedProduct.name;
-      (formData as Partial<Beer>).beerColor =
-          this.selectedProduct.color?.toLocaleUpperCase();
-      apiPath = 'beers';
-      break;
-    case 'snack':
-      (formData as Partial<Snack>).snackName = this.selectedProduct.name;
-      (formData as Partial<Snack>).options = this.selectedProduct.options.map(
-        (option) => ({
-          weight: option.measureValue,
-          quantity: option.quantity,
-          price: option.price,
-        })
-      ) as SnackOptions[];
-      apiPath = 'snacks';
-      break;
-    default:
+    try {
+      formData = this.buildFormData();
+    } catch (error) {
+      console.error(error);
       return;
     }
 
     this.productService
       .createProduct(apiPath, formData)
-      .pipe(
-        concatMap((response) => {
-          if (this.selectedFile) {
-            return this.productService
-              .uploadImage(response!.id, this.selectedFile, apiPath)
-              .pipe(
-                concatMap((imgResponse) => {
-                  console.log('Зображення завантажено:', imgResponse);
-                  if (imgResponse.imageUrl) {
-                    this.selectedProduct!.imageName = [imgResponse.imageUrl];
-                    this.imagePreview = imgResponse.imageUrl;
-                    this.selectedFile = null;
-                  }
-                  return of(response);
-                })
-              );
-          } else {
-            console.error('Файл не вибрано, uploadImage не викликається');
-            return of(response);
-          }
-        })
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.cancelEdit(),
+        next: (response) => {
+          console.log('Продукт створено:', response);
+          this.handleImageUpload(apiPath, response.id);
+        },
         error: (error) => console.error('Помилка додавання продукту:', error),
       });
   }
 
-  isFormInvalid(): boolean {
-    if (!this.selectedProduct) return true;
+  private buildFormData(): Partial<Product> {
+    if (!this.selectedProduct) throw new Error('Продукт не вибрано');
 
-    const { name, description, itemType, options } = this.selectedProduct;
-    if (!name || !description || !itemType) return true;
+    const options = this.selectedProduct.options.map((option) => ({
+      id: option.id,
+      quantity: Math.max(0, option.quantity),
+      price: Math.max(0, option.price),
+      ...(this.selectedProduct?.itemType.toLowerCase() === 'snack'
+        ? { measureValue: Math.max(0, (option as any).measureValue ?? 0) }
+        : { volume: Math.max(0, (option as any).volume ?? 0) }),
+    }));
 
-    return options.some(
-      (option) =>
-        !option.price ||
-        !option.quantity ||
-        (itemType === 'snack' ? !option.measureValue : !option.volume)
-    );
+    switch (this.selectedProduct.itemType.toLowerCase()) {
+      case 'cider':
+        return {
+          name: this.selectedProduct.name,
+          description: this.selectedProduct.description,
+          options: options,
+        } as Partial<Cider>;
+
+      case 'beer':
+        return {
+          name: this.selectedProduct.name,
+          description: this.selectedProduct.description,
+          options: options,
+        } as Partial<Beer>;
+
+      case 'snack':
+        return {
+          name: this.selectedProduct.name,
+          description: this.selectedProduct.description,
+          options: options.map((opt) => ({
+            id: opt.id,
+            weight: (opt as any).measureValue, // Type assertion here
+            quantity: opt.quantity,
+            price: opt.price,
+          })),
+        } as Partial<Snack>;
+
+      default:
+        throw new Error('Невідомий тип продукту');
+    }
   }
 
-  addOption() {
-    if (!this.selectedProduct || this.selectedProduct.options.length >= 2) {
+  private handleImageUpload(apiPath: string, productId: number): void {
+    if (!this.selectedFile) {
+      console.log('Файл не вибрано');
+      this.cancelEdit();
       return;
     }
 
-    this.selectedProduct.options.push({
-      id: this.selectedProduct.options.length,
-      price: 0,
-      quantity: 0,
-      measureValue: this.selectedProduct.itemType === 'snack' ? 0 : undefined,
-      volume: this.selectedProduct.itemType !== 'snack' ? 0 : undefined,
-    });
+    this.productService
+      .uploadImage(productId, this.selectedFile, apiPath)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (imgResponse) => {
+          if (!this.selectedProduct) return;
+          this.selectedProduct.imageName.unshift(imgResponse.imageUrl);
+          this.imagePreview = imgResponse.imageUrl;
+          this.selectedFile = null;
+          this.cancelEdit();
+        },
+        error: (error) =>
+          console.error('Помилка завантаження зображення:', error),
+      });
+  }
+
+  cancelEdit(): void {
+    this.cancel.emit();
+    this.selectedProduct = null;
+    this.imagePreview = null;
+    this.selectedFile = null;
+  }
+
+  private getApiPath(itemType: string): string {
+    switch (itemType.toLowerCase()) {
+      case 'cider':
+        return 'ciders';
+      case 'beer':
+        return 'beers';
+      case 'snack':
+        return 'snacks';
+      default:
+        throw new Error('Невідомий тип продукту');
+    }
   }
 }

@@ -1,40 +1,35 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environments';
+import { BaseService } from '../base.service';
 import { TokenService } from '../token/token.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class OrdersService {
-  private readonly apiBase = environment.apiBase;
-  constructor(private http: HttpClient, private tokenService: TokenService) {}
+export class OrdersService extends BaseService {
+  constructor(
+    protected override http: HttpClient,
+    protected override tokenService: TokenService
+  ) {
+    super(http, tokenService);
+  }
 
   getOrders(): Observable<any[]> {
-    const token = this.tokenService.getToken();
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+    return this.http.get<any[]>(`${this.apiBase}/orders`, {
+      headers: this.getHeaders(),
     });
-
-    return this.http.get<any[]>(`${this.apiBase}/orders`, { headers });
   }
 
   changeOrderStatus(orderId: number, orderData: any): Observable<any> {
-    const token = this.tokenService.getToken();
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
+    return this.http.put(`${this.apiBase}/orders/${orderId}`, orderData, {
+      headers: this.getHeaders(),
     });
-    return this.http.put(`${this.apiBase}/orders/${orderId}`, orderData, { headers });
   }
 
   deleteOrder(orderId: number): Observable<void> {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`,
+    return this.http.delete<void>(`${this.apiBase}/orders/${orderId}`, {
+      headers: this.getHeaders(),
     });
-  
-    return this.http.delete<void>(`${this.apiBase}/orders/${orderId}`, { headers });
   }
 }

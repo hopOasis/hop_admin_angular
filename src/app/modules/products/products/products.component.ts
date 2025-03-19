@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,14 +7,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductService } from '../../../core/services/product/product.service';
 import { ApiResponse, Product } from '../../../core/models/product.model';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { ProductEditorComponent } from '../../../components/product-editor/product-editor.component';
 import { AddProductComponent } from '../../../components/add-product/add-product.component';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
-import id from '@angular/common/locales/id';
 import { MatDialog } from '@angular/material/dialog';
 
 @Component({
@@ -37,7 +37,9 @@ import { MatDialog } from '@angular/material/dialog';
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   imagePreview: string | ArrayBuffer | null = null;
   resultsLength = 0;
   itemsPerPage = 10;
@@ -45,6 +47,7 @@ export class ProductsComponent implements OnInit {
   edit = false;
   selectedFile: File | null = null;
   selectedProduct: Product | null = null;
+  isAddingProduct = false;
 
   displayedColumns: string[] = [
     'name',
@@ -69,22 +72,32 @@ export class ProductsComponent implements OnInit {
     this.getAllProducts();
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   getAllProducts(): void {
-    this.productService.getProducts(0, 10).subscribe((data: ApiResponse) => {
-      const totalPages = data.totalPages;
-      const requests = [];
+    this.productService
+      .getProducts(0, 10)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((data: ApiResponse) => {
+        const totalPages = data.totalPages;
+        const requests = [];
 
-      for (let i = 0; i < totalPages; i++) {
-        requests.push(this.productService.getProducts(i, 10));
-      }
+        for (let i = 0; i < totalPages; i++) {
+          requests.push(this.productService.getProducts(i, 10));
+        }
 
-      forkJoin(requests).subscribe((responses) => {
-        this.products = responses.flatMap((res) => res.content);
-        this.filteredProducts = [...this.products];
+        forkJoin(requests)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((responses) => {
+            this.products = responses.flatMap((res) => res.content);
+            this.filteredProducts = [...this.products];
+          });
+
+        this.productLoading = false;
       });
-      this.productLoading = false;
-      console.log(this.productLoading);
-    });
   }
 
   Filter(event: Event): void {
@@ -119,31 +132,34 @@ export class ProductsComponent implements OnInit {
       data: { text: 'Ви дійсно хочете видалити цей товар?' },
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.executeDeleteProduct(itemType, productId);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.executeDeleteProduct(itemType, productId);
+        }
+      });
   }
 
   executeDeleteProduct(itemType: string, productId: number): void {
-    this.productService.deleteProduct(itemType, productId).subscribe(() => {
-      console.log(`Продукт з ID ${id} типу ${itemType} видалено`);
-    });
-    this.ngOnInit();
-    console.log(`Товар з id ${productId} типу ${itemType} видалено.`);
+    this.productService
+      .deleteProduct(itemType, productId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.products = this.products.filter(
+          (product) => product.id !== productId
+        );
+        this.filteredProducts = [...this.products];
+        console.log(`Товар з id ${productId} типу ${itemType} видалено.`);
+      });
   }
 
-  newProductId: number = 0;
-  isAddingProduct = false;
-
-  addProduct(): void {
-    this.newProductId = this.products.length;
-    this.isAddingProduct = true;
-    console.log('Новый ID:', this.newProductId);
-  }
-
-  onCancelAddingProduct(): void {
+  onCancelAddingProduct() {
     this.isAddingProduct = false;
+  }
+
+  startAddProduct() {
+    this.isAddingProduct = true;
   }
 }
