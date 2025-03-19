@@ -1,0 +1,50 @@
+.processing-row {
+    background-color: #e8f6f8; 
+  }
+  
+  .accepted-row {
+    background-color: #e3f8e4; 
+  }
+  
+  .in-progress-row {
+    background-color: #fcf9e1; 
+  }
+  
+  .delivered-row {
+    background-color: #e0dfdf; 
+  }
+  
+  .completed-row {
+    background-color: #f8dad1;
+  }
+  
+  .canceled-row {
+    background-color: #f7d1de; 
+}
+.actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  mat-icon {
+    cursor: pointer;
+  }
+}
+* {
+  padding: 0;
+  margin: 0;
+}
+table {
+ td {
+   .ng-star-inserted {
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 100px;
+   }
+   .mdc-text-field--filled {
+     background: transparent !important;
+   }
+  } 
+}
+svg.ng-tns-c1711764913-4 {
+  display: none;
+}
