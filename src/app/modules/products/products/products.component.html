@@ -1,1 +1,96 @@
-<p>products works!</p>
+<div *ngIf="!productLoading" class="table-wrapper">
+  <div class="header-tablet">
+    <div style="display: flex">
+      <mat-form-field>
+        <input matInput (keyup)="Filter($event)" placeholder="Пошук" #input />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Тип продукту</mat-label>
+        <mat-select (selectionChange)="onTypeChange($event.value)">
+          <mat-option value="all">All type</mat-option>
+          <mat-option value="cider">Cidre</mat-option>
+          <mat-option value="beer">Beer</mat-option>
+          <mat-option value="snack">Snack</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <button mat-raised-button (click)="addProduct()" color="primary">
+      Додати новий товар
+    </button>
+  </div>
+  <div *ngIf="filteredProducts.length === 0" class="empty-table-alert">
+    Таблиця на разі пуста або ви маете не корректний пошук чи фільтр за типом
+  </div>
+  <table
+    *ngIf="filteredProducts.length"
+    mat-table
+    [dataSource]="filteredProducts"
+    class="mat-elevation-z8"
+  >
+    <ng-container *ngFor="let column of displayedColumns">
+      <ng-container matColumnDef="{{ column }}">
+        <th mat-header-cell *matHeaderCellDef>{{ column | titlecase }}</th>
+        <td
+          mat-cell
+          *matCellDef="let product"
+          [ngClass]="{ 'description-column': column === 'description' }"
+        >
+          <ng-container *ngIf="column === 'imageName'">
+            <img
+              *ngIf="product.imageName.length"
+              [src]="product.imageName[0]"
+              alt="Image"
+              class="product-image"
+            />
+          </ng-container>
+
+          <ng-container *ngIf="column === 'options'">
+            <div class="option" *ngFor="let option of product.options">
+              <p>
+                {{ option.measureValue }}L, {{ option.quantity }} Price:
+                {{ option.price }}
+              </p>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="column === 'actions'">
+            <div class="actions">
+              <button
+                class="edit"
+                (click)="editProduct(product)"
+                mat-icon-button
+                color="primary"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                class="delete"
+                (click)="deleteProduct(product.itemType, product.id)"
+                mat-icon-button
+                color="warn"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              column !== 'imageName' &&
+              column !== 'options' &&
+              column !== 'actions'
+            "
+          >
+            {{ product[column] }}
+          </ng-container>
+        </td>
+      </ng-container>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <app-product-editor [selectedProduct]="selectedProduct"></app-product-editor>
+  <app-add-product
+    *ngIf="isAddingProduct"
+    [newProductId]="newProductId"
+    (cancel)="onCancelAddingProduct()"
+  ></app-add-product>
+</div>

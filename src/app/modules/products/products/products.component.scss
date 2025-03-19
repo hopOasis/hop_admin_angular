@@ -1,0 +1,51 @@
+* {
+  margin: 0;
+}
+.header-tablet {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  button {
+    border-radius: 0;
+  }
+}
+
+img {
+  height: 50px;
+  width: 50px;
+}
+.table-wrapper {
+  max-width: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: center;
+  text-align: center;
+  .edit {
+    color: #6faa60;
+  }
+  .delete {
+    color: #c44646;
+  }
+}
+.mat-column-actions {
+  text-align: center;
+}
+
+td,
+th {
+  padding: 0.3rem;
+  width: 10%;
+}
+
+th:nth-child(2) {
+  width: 50%;
+}
+table {
+  display: block;
+  height: calc(100vh - 15rem);
+  overflow-x: auto;
+}
