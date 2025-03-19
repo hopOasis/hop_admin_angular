@@ -97,31 +97,31 @@ export class AddProductComponent {
     let apiPath = '';
 
     switch (this.selectedProduct.itemType.toLowerCase()) {
-      case 'cider':
-        (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
-        (formData as Partial<Cider>).cidreColor =
+    case 'cider':
+      (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
+      (formData as Partial<Cider>).cidreColor =
           this.selectedProduct.color?.toLocaleUpperCase();
-        apiPath = 'ciders';
-        break;
-      case 'beer':
-        (formData as Partial<Beer>).beerName = this.selectedProduct.name;
-        (formData as Partial<Beer>).beerColor =
+      apiPath = 'ciders';
+      break;
+    case 'beer':
+      (formData as Partial<Beer>).beerName = this.selectedProduct.name;
+      (formData as Partial<Beer>).beerColor =
           this.selectedProduct.color?.toLocaleUpperCase();
-        apiPath = 'beers';
-        break;
-      case 'snack':
-        (formData as Partial<Snack>).snackName = this.selectedProduct.name;
-        (formData as Partial<Snack>).options = this.selectedProduct.options.map(
-          (option) => ({
-            weight: option.measureValue,
-            quantity: option.quantity,
-            price: option.price,
-          })
-        ) as SnackOptions[];
-        apiPath = 'snacks';
-        break;
-      default:
-        return;
+      apiPath = 'beers';
+      break;
+    case 'snack':
+      (formData as Partial<Snack>).snackName = this.selectedProduct.name;
+      (formData as Partial<Snack>).options = this.selectedProduct.options.map(
+        (option) => ({
+          weight: option.measureValue,
+          quantity: option.quantity,
+          price: option.price,
+        })
+      ) as SnackOptions[];
+      apiPath = 'snacks';
+      break;
+    default:
+      return;
     }
 
     this.productService

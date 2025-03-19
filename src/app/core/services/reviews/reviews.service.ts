@@ -17,7 +17,7 @@ export class ReviewsService {
 
   getAllReviews(): Observable<any> {
     const headers = new HttpHeaders({
-        Authorization: `Bearer ${this.tokenService.getToken()}`,
+      Authorization: `Bearer ${this.tokenService.getToken()}`,
     });
 
     return this.http.get(`${this.apiBase}/reviews`, { headers });
@@ -25,8 +25,8 @@ export class ReviewsService {
 
   deleteReview(reviewId: number): Observable<any> {
     const headers = new HttpHeaders({
-        Authorization: `Bearer ${this.tokenService.getToken()}`,
+      Authorization: `Bearer ${this.tokenService.getToken()}`,
     });
-        return this.http.delete(`${this.apiBase}/reviews/${reviewId}`, { headers });
-    }   
+    return this.http.delete(`${this.apiBase}/reviews/${reviewId}`, { headers });
+  }   
 }

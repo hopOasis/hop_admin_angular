@@ -10,7 +10,7 @@ describe('ConfirmDeleteDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ConfirmDeleteDialogComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(ConfirmDeleteDialogComponent);
     component = fixture.componentInstance;

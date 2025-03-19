@@ -77,29 +77,29 @@ export class ProductEditorComponent {
 
     console.log(this.selectedProduct.name);
     switch (this.selectedProduct.itemType.toLowerCase()) {
-      case 'cider':
-        (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
-        apiPath = 'ciders';
-        break;
-      case 'beer':
-        (formData as Partial<Beer>).beerName = this.selectedProduct.name;
-        apiPath = 'beers';
-        break;
-      case 'snack':
-        (formData as Partial<Snack>).snackName = this.selectedProduct.name;
-        (formData as Partial<Snack>).options = this.selectedProduct.options.map(
-          (option) => ({
-            id: option.id,
-            weight: option.measureValue,
-            quantity: option.quantity,
-            price: option.price,
-          })
-        ) as SnackOptions[];
-        apiPath = 'snacks';
-        break;
-      default:
-        console.error('Невідомий тип продукту:', this.selectedProduct.itemType);
-        return;
+    case 'cider':
+      (formData as Partial<Cider>).ciderName = this.selectedProduct.name;
+      apiPath = 'ciders';
+      break;
+    case 'beer':
+      (formData as Partial<Beer>).beerName = this.selectedProduct.name;
+      apiPath = 'beers';
+      break;
+    case 'snack':
+      (formData as Partial<Snack>).snackName = this.selectedProduct.name;
+      (formData as Partial<Snack>).options = this.selectedProduct.options.map(
+        (option) => ({
+          id: option.id,
+          weight: option.measureValue,
+          quantity: option.quantity,
+          price: option.price,
+        })
+      ) as SnackOptions[];
+      apiPath = 'snacks';
+      break;
+    default:
+      console.error('Невідомий тип продукту:', this.selectedProduct.itemType);
+      return;
     }
 
     this.productService

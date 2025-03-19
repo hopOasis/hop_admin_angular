@@ -25,12 +25,12 @@ import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete
     MatButtonModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatInputModule, 
+    MatInputModule,
     MatFormFieldModule,
-    ConfirmDeleteDialogComponent
+    ConfirmDeleteDialogComponent,
   ],
   templateUrl: './reviews.component.html',
-  styleUrls: ['./reviews.component.scss']
+  styleUrls: ['./reviews.component.scss'],
 })
 export class ReviewsComponent implements OnInit {
   reviews: any[] = [];
@@ -39,7 +39,10 @@ export class ReviewsComponent implements OnInit {
   searchText: string = '';
   filterDate: string = '';
 
-  constructor(private reviewsService: ReviewsService, private dialog: MatDialog) {}
+  constructor(
+    private reviewsService: ReviewsService,
+    private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
     this.getAllReviews();
@@ -48,21 +51,24 @@ export class ReviewsComponent implements OnInit {
   getAllReviews(): void {
     this.reviewsService.getAllReviews().subscribe((reviews: any) => {
       this.reviews = reviews;
-      this.reviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      this.reviews.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
       this.filteredReviews = [...this.reviews];
     });
   }
 
   onMoreInfo(reviewId: number): void {
-    const review = this.reviews.find(r => r.id === reviewId); 
+    const review = this.reviews.find((r) => r.id === reviewId);
     if (review) {
-      console.log('Модалка с инфой:', JSON.stringify(review, null, 2)); 
-    } 
+      console.log('Модалка с инфой:', JSON.stringify(review, null, 2));
+    }
   }
-  
+
   onDeleteReview(reviewId: number): void {
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
-      data: { text: 'Ви дійсно хочете видалити цей відгук?' }
+      data: { text: 'Ви дійсно хочете видалити цей відгук?' },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -76,7 +82,7 @@ export class ReviewsComponent implements OnInit {
     this.reviewsService.deleteReview(reviewId).subscribe(
       (response) => {
         console.log('Відгук було видалено', response);
-        this.reviews = this.reviews.filter(review => review.id !== reviewId);  
+        this.reviews = this.reviews.filter((review) => review.id !== reviewId);
       },
       (error) => {
         console.error('Не вдалося видалити відгук', error);
@@ -86,11 +92,12 @@ export class ReviewsComponent implements OnInit {
   applyFilters(): void {
     const query = this.searchText.trim().toLowerCase();
     const date = this.filterDate;
-  
+
     this.filteredReviews = this.reviews.filter((review) => {
-      const matchesQuery = review.content?.toLowerCase().includes(query) || review.id.toString().includes(query);
-      return matchesQuery 
+      const matchesQuery =
+        review.content?.toLowerCase().includes(query) ||
+        review.id.toString().includes(query);
+      return matchesQuery;
     });
   }
-  
 }

@@ -5,9 +5,9 @@ import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { OrdersService } from '../../../core/services/orders/orders.service';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { Order } from '../../../core/models/order.model';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -16,18 +16,25 @@ import { Order } from '../../../core/models/order.model';
     MatTableModule,
     MatSelectModule,
     MatInputModule,
-    MatDialog,
     ConfirmDeleteDialogComponent,
-    MatIconModule
+    MatIconModule,
   ],
   templateUrl: './orders.component.html',
-  styleUrls: ['./orders.component.scss']
+  styleUrls: ['./orders.component.scss'],
 })
 export class OrdersComponent implements OnInit {
   orders: any[] = [];
   filteredOrders: any[] = [];
   selectedStatus: string = 'all';
-  displayedColumns = ['id', 'user', 'contacts', 'items', 'totalPrice', 'deliveryStatus', 'actions'];
+  displayedColumns = [
+    'id',
+    'user',
+    'contacts',
+    'items',
+    'totalPrice',
+    'deliveryStatus',
+    'actions',
+  ];
   selectedOrderId: string = '';
   @ViewChild('input') inputRef!: ElementRef;
   orderStatuses = [
@@ -54,8 +61,6 @@ export class OrdersComponent implements OnInit {
         return '';
     }
   }
-  
-  
 
   constructor(
     private ordersService: OrdersService,
@@ -76,12 +81,15 @@ export class OrdersComponent implements OnInit {
     );
   }
 
-   applyFilters(query: string): void {
-    this.filteredOrders = this.orders.filter(order => {
-      const matchesStatus = this.selectedStatus === 'all' 
-        || order.deliveryStatus?.toLowerCase() === this.selectedStatus.toLowerCase();
-      const matchesQuery = query === '' 
-        || order.id.toString().toLowerCase().includes(query.toLowerCase());
+  applyFilters(query: string): void {
+    this.filteredOrders = this.orders.filter((order) => {
+      const matchesStatus =
+        this.selectedStatus === 'all' ||
+        order.deliveryStatus?.toLowerCase() ===
+          this.selectedStatus.toLowerCase();
+      const matchesQuery =
+        query === '' ||
+        order.id.toString().toLowerCase().includes(query.toLowerCase());
       return matchesStatus && matchesQuery;
     });
   }
@@ -93,13 +101,17 @@ export class OrdersComponent implements OnInit {
   }
 
   Filter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    const filterValue = (event.target as HTMLInputElement).value
+      .trim()
+      .toLowerCase();
     this.applyFilters(filterValue);
   }
 
   deleteOrder(orderId: number): void {
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
-      data: { text: 'Ви дійсно хочете скасувати цей заказ? Після підтвердження ви не зможете редагувати та змінювати цей заказ' },
+      data: {
+        text: 'Ви дійсно хочете скасувати цей заказ? Після підтвердження ви не зможете редагувати та змінювати цей заказ',
+      },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
@@ -119,7 +131,7 @@ export class OrdersComponent implements OnInit {
       deliveryAddress: order.deliveryAddress,
       deliveryStatus: newStatus.toLocaleUpperCase(),
     };
-  
+
     this.ordersService.changeOrderStatus(order.id, orderData).subscribe(
       () => {
         order.pendingStatus = null;
@@ -129,5 +141,4 @@ export class OrdersComponent implements OnInit {
       (error) => console.error('Помилка оновлення статусу', error)
     );
   }
-  
 }
