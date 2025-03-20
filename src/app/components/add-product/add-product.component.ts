@@ -19,6 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf } from '@angular/common';
+import { NotificationService } from '../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-add-product',
@@ -46,7 +47,10 @@ export class AddProductComponent implements OnDestroy {
   selectedFile: File | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private notification: NotificationService
+  ) {}
   ngOnInit(): void {
     if (!this.selectedProduct) {
       this.initializeNewProduct();
@@ -140,7 +144,6 @@ export class AddProductComponent implements OnDestroy {
 
   addProduct(): void {
     if (!this.selectedProduct) {
-      console.error('Продукт не вибрано');
       return;
     }
 
@@ -159,7 +162,7 @@ export class AddProductComponent implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('Продукт створено:', response);
+          this.notification.show('Продукт створено');
           this.handleImageUpload(apiPath, response.id);
         },
         error: (error) => console.error('Помилка додавання продукту:', error),
@@ -199,7 +202,7 @@ export class AddProductComponent implements OnDestroy {
           description: this.selectedProduct.description,
           options: options.map((opt) => ({
             id: opt.id,
-            weight: (opt as any).measureValue, // Type assertion here
+            weight: (opt as any).measureValue,
             quantity: opt.quantity,
             price: opt.price,
           })),
@@ -212,7 +215,6 @@ export class AddProductComponent implements OnDestroy {
 
   private handleImageUpload(apiPath: string, productId: number): void {
     if (!this.selectedFile) {
-      console.log('Файл не вибрано');
       this.cancelEdit();
       return;
     }

@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -15,6 +15,7 @@ import { Observable, Subject } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Review } from '../../../core/models/reviews.model';
 import { takeUntil } from 'rxjs/operators';
+import { NotificationService } from '../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-reviews',
@@ -47,7 +48,7 @@ export class ReviewsComponent implements OnInit, OnDestroy {
   constructor(
     private reviewsService: ReviewsService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -69,10 +70,6 @@ export class ReviewsComponent implements OnInit, OnDestroy {
         );
         this.filteredReviews = [...this.reviews];
       });
-  }
-
-  private showNotification(message: string): void {
-    this.snackBar.open(message, 'OK', { duration: 3000 });
   }
 
   private openConfirmationDialog(message: string): Observable<boolean> {
@@ -99,9 +96,9 @@ export class ReviewsComponent implements OnInit, OnDestroy {
           this.reviews = this.reviews.filter(
             (review) => review.id !== reviewId
           );
-          this.showNotification('Відгук було видалено');
+          this.notification.show('Відгук було видалено');
         },
-        () => this.showNotification('Не вдалося видалити відгук')
+        () => this.notification.show('Не вдалося видалити відгук')
       );
   }
 

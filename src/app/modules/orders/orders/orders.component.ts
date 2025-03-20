@@ -12,12 +12,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialog } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar'; // Импортируем MatSnackBar для уведомлений
 import { OrdersService } from '../../../core/services/orders/orders.service';
 import { Order } from '../../../core/models/order.model';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NotificationService } from '../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-orders',
@@ -65,7 +65,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
   constructor(
     private ordersService: OrdersService,
     private dialog: MatDialog,
-    private snackBar: MatSnackBar // Добавляем MatSnackBar
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -136,7 +136,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
             next: () => {
               this.orders = this.orders.filter((o) => o.id !== order.id);
               this.applyFilters();
-              this.showNotification('Замовлення було видалено');
+              this.notification.show('Статус замовлення змінено!');
             },
             error: (error) =>
               console.error('Помилка видалення замовлення:', error),
@@ -157,9 +157,7 @@ export class OrdersComponent implements OnInit, OnDestroy {
               if (index > -1) {
                 this.orders[index] = updatedOrder;
                 this.applyFilters();
-                this.showNotification(
-                  `Статус замовлення змінено на "${newStatus}"`
-                );
+                this.notification.show('Статус замовлення змінено!');
               }
             },
             error: (error) => {
@@ -181,10 +179,6 @@ export class OrdersComponent implements OnInit, OnDestroy {
     };
 
     return statusMap[status.toUpperCase()] || '';
-  }
-
-  private showNotification(message: string): void {
-    this.snackBar.open(message, 'OK', { duration: 3000 });
   }
 
   ngOnDestroy(): void {

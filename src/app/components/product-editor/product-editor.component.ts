@@ -20,6 +20,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NgIf } from '@angular/common';
+import { NotificationService } from '../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-product-editor',
@@ -45,7 +46,10 @@ export class ProductEditorComponent implements OnDestroy {
   selectedFile: File | null = null;
   private destroy$ = new Subject<void>();
 
-  constructor(private productService: ProductService) {}
+  constructor(
+    private productService: ProductService,
+    private notification: NotificationService
+  ) {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -84,9 +88,8 @@ export class ProductEditorComponent implements OnDestroy {
       .updateProduct(apiPath, this.selectedProduct.id, formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (response) => {
-          console.log(formData);
-          console.log('Продукт оновлено:', response);
+        next: () => {
+          this.notification.show('Продукт було оновлено!');
           this.handleImageUpload(apiPath);
         },
         error: (error) => console.error('Помилка оновлення продукту:', error),
@@ -141,7 +144,6 @@ export class ProductEditorComponent implements OnDestroy {
 
   private handleImageUpload(apiPath: string): void {
     if (!this.selectedFile || !this.selectedProduct?.id) {
-      console.log('Файл не вибрано');
       this.cancelEdit();
       return;
     }

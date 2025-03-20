@@ -16,6 +16,7 @@ import { ProductEditorComponent } from '../../../components/product-editor/produ
 import { AddProductComponent } from '../../../components/add-product/add-product.component';
 import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { NotificationService } from '../../../core/services/notification/notification.service';
 
 @Component({
   selector: 'app-product',
@@ -65,7 +66,8 @@ export class ProductsComponent implements OnInit, OnDestroy {
 
   constructor(
     private productService: ProductService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private notification: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -81,22 +83,34 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.productService
       .getProducts(0, 10)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((data: ApiResponse) => {
-        const totalPages = data.totalPages;
-        const requests = [];
+      .subscribe({
+        next: (data: ApiResponse) => {
+          const totalPages = data.totalPages;
+          const requests = [];
 
-        for (let i = 0; i < totalPages; i++) {
-          requests.push(this.productService.getProducts(i, 10));
-        }
+          for (let i = 0; i < totalPages; i++) {
+            requests.push(this.productService.getProducts(i, 10));
+          }
 
-        forkJoin(requests)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((responses) => {
-            this.products = responses.flatMap((res) => res.content);
-            this.filteredProducts = [...this.products];
-          });
-
-        this.productLoading = false;
+          forkJoin(requests)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (responses) => {
+                this.products = responses.flatMap((res) => res.content);
+                this.filteredProducts = [...this.products];
+              },
+              error: (error) => {
+                this.notification.show('Помилка завантаження товарів');
+                console.error(error);
+              },
+            });
+          this.productLoading = false;
+        },
+        error: (error) => {
+          this.notification.show('Помилка завантаження товарів');
+          console.error(error);
+          this.productLoading = false;
+        },
       });
   }
 
@@ -146,12 +160,18 @@ export class ProductsComponent implements OnInit, OnDestroy {
     this.productService
       .deleteProduct(itemType, productId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.products = this.products.filter(
-          (product) => product.id !== productId
-        );
-        this.filteredProducts = [...this.products];
-        console.log(`Товар з id ${productId} типу ${itemType} видалено.`);
+      .subscribe({
+        next: () => {
+          this.products = this.products.filter(
+            (product) => product.id !== productId
+          );
+          this.filteredProducts = [...this.products];
+          this.notification.show('Товар успішно видалено');
+        },
+        error: (error) => {
+          this.notification.show('Помилка видалення товару');
+          console.error(error);
+        },
       });
   }
 
