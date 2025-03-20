@@ -1,81 +1,122 @@
-<div>
-  <mat-form-field appearance="fill">
-    <mat-label>Фільтр за статусом</mat-label>
-    <mat-select (selectionChange)="onStatusChange($event.value)">
-      <mat-option value="all">All</mat-option>
-      <mat-option *ngFor="let status of orderStatuses" [value]="status.value">{{ status.label }}</mat-option>
-    </mat-select>
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput (keyup)="Filter($event)" #input />
-  </mat-form-field>
+<div class="order-container">
+  <div class="filters-toolbar">
+    <mat-form-field appearance="fill">
+      <mat-label>Фільтр за статусом</mat-label>
+      <mat-select
+        [(value)]="selectedStatus"
+        (selectionChange)="onStatusChange()"
+      >
+        <mat-option *ngFor="let status of orderStatuses" [value]="status.value">
+          {{ status.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
+    <mat-form-field appearance="fill">
+      <input
+        matInput
+        placeholder="Пошук за ID"
+        (keyup)="onSearchInput($event)"
+        #input
+      />
+    </mat-form-field>
+  </div>
 
-  <table mat-table [dataSource]="filteredOrders" class="mat-elevation-z8">
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">{{ order.id }}</td>
-    </ng-container>
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="filteredOrders" class="mat-elevation-z8">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          {{ order.id }}
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="user">
-      <th mat-header-cell *matHeaderCellDef>User</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        {{ order.firstName }} <br> {{ order.lastName }}<br>
-        {{ order.deliveryAddress }}
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef>Користувач</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          {{ order.firstName }} {{ order.lastName }}<br />
+          <small>{{ order.deliveryAddress }}</small>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="contacts">
-      <th mat-header-cell *matHeaderCellDef>Contact</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        <div>{{ order.customerPhoneNumber }}</div>
-        <div>{{ order.customerEmail }}</div>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="contacts">
+        <th mat-header-cell *matHeaderCellDef>Контакти</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          <div>{{ order.customerPhoneNumber }}</div>
+          <div class="email">{{ order.customerEmail }}</div>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="items">
-      <th mat-header-cell *matHeaderCellDef>Basket</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        <div *ngFor="let item of order.items">
-          {{ item.itemTitle }} ({{ item.itemType }}) x{{ item.quantity }} - {{ item.price }}
-        </div>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="items">
+        <th mat-header-cell *matHeaderCellDef>Товари</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          <div *ngFor="let item of order.items" class="order-item">
+            <span class="item-title">{{ item.itemTitle }}</span>
+            <span class="item-type">{{ item.itemType | uppercase }}</span>
+            <span class="item-quantity">x{{ item.quantity }}</span>
+            <span class="item-price">{{ item.price | currency }}</span>
+          </div>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="totalPrice">
-      <th mat-header-cell *matHeaderCellDef>Sum</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">{{ order.totalPrice }}</td>
-    </ng-container>
+      <ng-container matColumnDef="totalPrice">
+        <th mat-header-cell *matHeaderCellDef>Сума</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          {{ order.totalPrice | currency }}
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="deliveryStatus">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        <mat-form-field appearance="fill">
-          <mat-select [placeholder]="order.deliveryStatus.toLocaleLowerCase()" (selectionChange)="editStatus(order, $event.value)">
-            <mat-option *ngFor="let status of orderStatuses" [value]="status.value">{{ status.value }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </td>
-    </ng-container>
+      <ng-container matColumnDef="deliveryStatus">
+        <th mat-header-cell *matHeaderCellDef>Статус</th>
+        <td
+          mat-cell
+          *matCellDef="let order"
+          [class]="getRowClass(order.deliveryStatus)"
+        >
+          <mat-form-field appearance="fill">
+            <mat-select
+              [(value)]="order.deliveryStatus"
+              (selectionChange)="updateOrderStatus(order, $event.value)"
+              [disabled]="order.deliveryStatus === 'COMPLETED'"
+            >
+              <mat-option
+                *ngFor="let status of orderStatuses"
+                [value]="status.value.toUpperCase()"
+                [disabled]="status.value === 'all'"
+              >
+                {{ status.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-      <td [ngClass]="getRowClass(order.deliveryStatus)" mat-cell *matCellDef="let order">
-        <div class="actions">
-          <mat-icon *ngIf="order.pendingStatus && order.pendingStatus !== order.deliveryStatus"
-                  (click)="changeStatus(order, order.pendingStatus)"
-                  color="primary"
-                  >
-          done
-        </mat-icon>
-        <mat-icon  >
-          delete
-        </mat-icon>
-        </div>
-      </td>
-    </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+  <div *ngIf="isLoading" class="loading-overlay">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
 </div>

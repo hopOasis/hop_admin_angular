@@ -1,13 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+} from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
-import { OrdersService } from '../../../core/services/orders/orders.service';
-import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
 import { MatInputModule } from '@angular/material/input';
-import { Order } from '../../../core/models/order.model';
 import { MatDialog } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar'; // Импортируем MatSnackBar для уведомлений
+import { OrdersService } from '../../../core/services/orders/orders.service';
+import { Order } from '../../../core/models/order.model';
+import { ConfirmDeleteDialogComponent } from '../../../components/confirm-delete-dialog/confirm-delete-dialog.component';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+
 @Component({
   selector: 'app-orders',
   standalone: true,
@@ -18,14 +29,17 @@ import { MatDialog } from '@angular/material/dialog';
     MatInputModule,
     ConfirmDeleteDialogComponent,
     MatIconModule,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.scss'],
 })
-export class OrdersComponent implements OnInit {
-  orders: any[] = [];
-  filteredOrders: any[] = [];
+export class OrdersComponent implements OnInit, OnDestroy {
+  orders: Order[] = [];
+  filteredOrders: Order[] = [];
   selectedStatus: string = 'all';
+  isLoading: boolean = false;
+
   displayedColumns = [
     'id',
     'user',
@@ -33,112 +47,148 @@ export class OrdersComponent implements OnInit {
     'items',
     'totalPrice',
     'deliveryStatus',
-    'actions',
   ];
-  selectedOrderId: string = '';
-  @ViewChild('input') inputRef!: ElementRef;
+
   orderStatuses = [
-    { value: 'all', label: 'All' },
-    { value: 'processing', label: 'Processing' },
-    { value: 'accepted', label: 'Accepted' },
-    { value: 'in_progress', label: 'In Progress' },
-    { value: 'delivered', label: 'Delivered' },
-    { value: 'completed', label: 'Completed' },
+    { value: 'all', label: 'Всі' },
+    { value: 'processing', label: 'В обробці' },
+    { value: 'accepted', label: 'Прийнято' },
+    { value: 'in_progress', label: 'В процесі' },
+    { value: 'delivered', label: 'Доставляється' },
+    { value: 'completed', label: 'Завершено' },
   ];
-  getRowClass(status: string): string {
-    switch (status) {
-      case 'PROCESSING':
-        return 'processing-row';
-      case 'ACCEPTED':
-        return 'accepted-row';
-      case 'IN_PROGRESS':
-        return 'in-progress-row';
-      case 'DELIVERED':
-        return 'delivered-row';
-      case 'COMPLETED':
-        return 'completed-row';
-      default:
-        return '';
-    }
-  }
+
+  @ViewChild('input') inputRef!: ElementRef<HTMLInputElement>;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private ordersService: OrdersService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar // Добавляем MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.getAllOrders();
+    this.loadOrders();
   }
 
-  getAllOrders() {
-    this.ordersService.getOrders().subscribe(
-      (data) => {
-        this.orders = data;
-        this.filteredOrders = [...data];
-      },
-      (error) => console.error('Error fetching orders:', error)
-    );
+  private loadOrders(): void {
+    this.isLoading = true;
+    this.ordersService
+      .getOrders()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (orders) => {
+          this.orders = orders;
+          this.applyFilters();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Помилка завантаження замовлень:', error);
+          this.isLoading = false;
+        },
+      });
   }
 
-  applyFilters(query: string): void {
+  applyFilters(): void {
+    const searchQuery = this.inputRef.nativeElement.value.trim().toLowerCase();
+    const statusFilter = this.selectedStatus.toLowerCase();
+
     this.filteredOrders = this.orders.filter((order) => {
       const matchesStatus =
-        this.selectedStatus === 'all' ||
-        order.deliveryStatus?.toLowerCase() ===
-          this.selectedStatus.toLowerCase();
-      const matchesQuery =
-        query === '' ||
-        order.id.toString().toLowerCase().includes(query.toLowerCase());
-      return matchesStatus && matchesQuery;
+        statusFilter === 'all' ||
+        order.deliveryStatus.toLowerCase() === statusFilter;
+      const matchesSearch = order.id.toString().includes(searchQuery);
+      return matchesStatus && matchesSearch;
     });
   }
 
-  onStatusChange(status: string): void {
-    this.selectedStatus = status;
-    const query = this.inputRef.nativeElement.value.trim().toLowerCase();
-    this.applyFilters(query);
+  onStatusChange(): void {
+    this.applyFilters();
   }
 
-  Filter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value
-      .trim()
-      .toLowerCase();
-    this.applyFilters(filterValue);
+  onSearchInput(event: Event): void {
+    this.applyFilters();
   }
 
-  deleteOrder(orderId: number): void {
+  updateOrderStatus(order: Order, newStatus: string): void {
+    const upperStatus = newStatus.toUpperCase();
+
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       data: {
-        text: 'Ви дійсно хочете скасувати цей заказ? Після підтвердження ви не зможете редагувати та змінювати цей заказ',
+        text:
+          upperStatus === 'COMPLETED'
+            ? 'Ви дійсно хочете закрити це замовлення? Після підтвердження ви не зможете редагувати або змінювати це замовлення.'
+            : `Ви дійсно хочете змінити статус замовлення на "${newStatus}"?`,
       },
     });
+
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.deleteOrder(orderId);
+      if (!result) {
+        return;
+      }
+
+      if (upperStatus === 'COMPLETED') {
+        this.ordersService
+          .deleteOrder(order.id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              this.orders = this.orders.filter((o) => o.id !== order.id);
+              this.applyFilters();
+              this.showNotification('Замовлення було видалено');
+            },
+            error: (error) =>
+              console.error('Помилка видалення замовлення:', error),
+          });
+      } else {
+        const updatedOrder: Order = {
+          ...order,
+          deliveryStatus: upperStatus,
+          pendingStatus: null,
+        };
+
+        this.ordersService
+          .changeOrderStatus(order.id, updatedOrder)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              const index = this.orders.findIndex((o) => o.id === order.id);
+              if (index > -1) {
+                this.orders[index] = updatedOrder;
+                this.applyFilters();
+                this.showNotification(
+                  `Статус замовлення змінено на "${newStatus}"`
+                );
+              }
+            },
+            error: (error) => {
+              console.error('Помилка оновлення статусу:', error);
+              order.pendingStatus = null;
+            },
+          });
       }
     });
   }
-  editStatus(order: any, status: string): void {
-    order.pendingStatus = status;
-  }
 
-  changeStatus(order: Order, newStatus: string): void {
-    const orderData: Omit<Order, 'id' | 'pendingStatus'> = {
-      customerPhoneNumber: order.customerPhoneNumber,
-      paymentType: order.paymentType,
-      deliveryMethod: order.deliveryMethod,
-      deliveryAddress: order.deliveryAddress,
-      deliveryStatus: newStatus.toLocaleUpperCase(),
+  getRowClass(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      PROCESSING: 'processing-row',
+      ACCEPTED: 'accepted-row',
+      IN_PROGRESS: 'in-progress-row',
+      DELIVERED: 'delivered-row',
+      COMPLETED: 'completed-row',
     };
 
-    this.ordersService.changeOrderStatus(order.id, orderData).subscribe(
-      () => {
-        order.pendingStatus = null;
-        console.log('Статус успішно оновлено');
-        this.ngOnInit();
-      },
-      (error) => console.error('Помилка оновлення статусу', error)
-    );
+    return statusMap[status.toUpperCase()] || '';
+  }
+
+  private showNotification(message: string): void {
+    this.snackBar.open(message, 'OK', { duration: 3000 });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
